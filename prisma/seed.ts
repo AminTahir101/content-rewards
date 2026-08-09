@@ -245,6 +245,106 @@ async function main() {
     }
   }
 
+  // Seed a demo creator wallet with transaction history
+  console.log('Seeding demo creator wallet...')
+
+  const demoUser = await prisma.user.findFirst({
+    where: { role: 'CREATOR' },
+    select: { id: true, name: true },
+  })
+
+  if (demoUser) {
+    const existing = await prisma.wallet.findUnique({ where: { userId: demoUser.id } })
+
+    if (!existing) {
+      const campaigns = await prisma.campaign.findMany({
+        take: 4,
+        select: { id: true, name: true },
+      })
+
+      const txDefs: Array<{
+        type: 'CAMPAIGN_REWARD' | 'WITHDRAWAL' | 'PLATFORM_FEE'
+        direction: 'CREDIT' | 'DEBIT'
+        status: 'SETTLED' | 'PENDING'
+        amount: string
+        description: string
+        referenceType: string
+        referenceId: string
+        daysAgo: number
+      }> = [
+        { type: 'CAMPAIGN_REWARD', direction: 'CREDIT', status: 'SETTLED', amount: '1240.00', description: `Reward: ${campaigns[0]?.name ?? 'Campaign'}`, referenceType: 'campaign', referenceId: campaigns[0]?.id ?? '', daysAgo: 45 },
+        { type: 'PLATFORM_FEE',   direction: 'DEBIT',  status: 'SETTLED', amount: '124.00',  description: 'Platform fee (10%)', referenceType: 'campaign', referenceId: campaigns[0]?.id ?? '', daysAgo: 45 },
+        { type: 'CAMPAIGN_REWARD', direction: 'CREDIT', status: 'SETTLED', amount: '870.50',  description: `Reward: ${campaigns[1]?.name ?? 'Campaign'}`, referenceType: 'campaign', referenceId: campaigns[1]?.id ?? '', daysAgo: 30 },
+        { type: 'PLATFORM_FEE',   direction: 'DEBIT',  status: 'SETTLED', amount: '87.05',   description: 'Platform fee (10%)', referenceType: 'campaign', referenceId: campaigns[1]?.id ?? '', daysAgo: 30 },
+        { type: 'WITHDRAWAL',     direction: 'DEBIT',  status: 'SETTLED', amount: '1500.00', description: 'Withdrawal to bank account', referenceType: 'withdrawal', referenceId: 'demo-withdrawal-1', daysAgo: 20 },
+        { type: 'CAMPAIGN_REWARD', direction: 'CREDIT', status: 'SETTLED', amount: '560.00',  description: `Reward: ${campaigns[2]?.name ?? 'Campaign'}`, referenceType: 'campaign', referenceId: campaigns[2]?.id ?? '', daysAgo: 12 },
+        { type: 'PLATFORM_FEE',   direction: 'DEBIT',  status: 'SETTLED', amount: '56.00',   description: 'Platform fee (10%)', referenceType: 'campaign', referenceId: campaigns[2]?.id ?? '', daysAgo: 12 },
+        { type: 'CAMPAIGN_REWARD', direction: 'CREDIT', status: 'PENDING', amount: '320.00',  description: `Reward: ${campaigns[3]?.name ?? 'Campaign'}`, referenceType: 'campaign', referenceId: campaigns[3]?.id ?? '', daysAgo: 2 },
+        { type: 'CAMPAIGN_REWARD', direction: 'CREDIT', status: 'PENDING', amount: '180.00',  description: 'Reward: Bonus milestone', referenceType: 'campaign', referenceId: campaigns[0]?.id ?? '', daysAgo: 1 },
+      ]
+
+      // Compute running balance
+      let running = 0
+      const txsWithBalance = txDefs.map((tx) => {
+        const amt = parseFloat(tx.amount)
+        running += tx.direction === 'CREDIT' ? amt : -amt
+        return { ...tx, balanceAfter: running.toFixed(2) }
+      })
+
+      // Compute wallet totals
+      const totalEarned = txDefs
+        .filter((t) => t.type === 'CAMPAIGN_REWARD' && t.direction === 'CREDIT')
+        .reduce((s, t) => s + parseFloat(t.amount), 0)
+      const totalFees = txDefs
+        .filter((t) => t.type === 'PLATFORM_FEE')
+        .reduce((s, t) => s + parseFloat(t.amount), 0)
+      const totalWithdrawn = txDefs
+        .filter((t) => t.type === 'WITHDRAWAL')
+        .reduce((s, t) => s + parseFloat(t.amount), 0)
+      const pendingAmount = txDefs
+        .filter((t) => t.status === 'PENDING' && t.direction === 'CREDIT')
+        .reduce((s, t) => s + parseFloat(t.amount), 0)
+      const availableBalance = totalEarned - totalFees - totalWithdrawn - pendingAmount
+
+      const wallet = await prisma.wallet.create({
+        data: {
+          userId: demoUser.id,
+          totalEarned: totalEarned.toFixed(2),
+          pendingBalance: pendingAmount.toFixed(2),
+          availableBalance: Math.max(0, availableBalance).toFixed(2),
+          lifetimePaid: totalWithdrawn.toFixed(2),
+        },
+      })
+
+      for (const tx of txsWithBalance) {
+        const date = new Date()
+        date.setDate(date.getDate() - tx.daysAgo)
+        await prisma.walletTransaction.create({
+          data: {
+            walletId: wallet.id,
+            userId: demoUser.id,
+            type: tx.type,
+            direction: tx.direction,
+            status: tx.status,
+            amount: tx.amount,
+            description: tx.description,
+            referenceType: tx.referenceType,
+            referenceId: tx.referenceId,
+            balanceAfter: tx.balanceAfter,
+            createdAt: date,
+            settledAt: tx.status === 'SETTLED' ? date : null,
+          },
+        })
+      }
+
+      console.log(`  Created wallet for ${demoUser.name ?? demoUser.id} with ${txsWithBalance.length} transactions`)
+    } else {
+      console.log('  Wallet already exists — skipping')
+    }
+  } else {
+    console.log('  No creator found — register an account first, then re-run seed')
+  }
+
   console.log('Done.')
 }
 

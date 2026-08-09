@@ -333,3 +333,70 @@ model Submission {
   @@index([userId, campaignId])
   @@map("submissions")
 }
+
+// ─── Wallet / Ledger ─────────────────────────────────────────────────────────
+
+enum WalletTransactionType {
+  CAMPAIGN_REWARD
+  WITHDRAWAL
+  REFUND
+  PLATFORM_FEE
+  ADJUSTMENT
+  BONUS
+  REFERRAL
+}
+
+enum WalletTransactionDirection {
+  CREDIT
+  DEBIT
+}
+
+enum WalletTransactionStatus {
+  PENDING
+  SETTLED
+  FAILED
+  REVERSED
+}
+
+model Wallet {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  currency         String   @default("SAR")
+  // Derived balances — kept in sync transactionally, never mutated directly
+  totalEarned      Decimal  @default(0) @db.Decimal(14, 2)
+  pendingBalance   Decimal  @default(0) @db.Decimal(14, 2)
+  availableBalance Decimal  @default(0) @db.Decimal(14, 2)
+  lifetimePaid     Decimal  @default(0) @db.Decimal(14, 2)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  transactions WalletTransaction[]
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id            String                     @id @default(uuid())
+  walletId      String
+  userId        String
+  type          WalletTransactionType
+  direction     WalletTransactionDirection
+  status        WalletTransactionStatus    @default(PENDING)
+  amount        Decimal                    @db.Decimal(14, 2)
+  currency      String                     @default("SAR")
+  // What triggered this transaction
+  referenceType String?                    // e.g. "submission", "withdrawal"
+  referenceId   String?                    // e.g. submission.id
+  description   String?
+  // Snapshot of balance after this transaction (for audit)
+  balanceAfter  Decimal?                   @db.Decimal(14, 2)
+  createdAt     DateTime                   @default(now())
+  settledAt     DateTime?
+
+  wallet Wallet @relation(fields: [walletId], references: [id])
+
+  @@index([walletId, createdAt])
+  @@index([userId, createdAt])
+  @@index([referenceType, referenceId])
+  @@map("wallet_transactions")
+}
