@@ -1,17 +1,19 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Source_Sans_3, Source_Code_Pro } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { cookies } from 'next/headers'
 import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const sourceSans = Source_Sans_3({
+  variable: '--font-sans',
   subsets: ['latin'],
+  weight: ['300', '400', '600', '700', '900'],
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const sourceMono = Source_Code_Pro({
+  variable: '--font-mono',
   subsets: ['latin'],
+  weight: ['400', '600'],
 })
 
 export const metadata: Metadata = {
@@ -30,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html
       lang={validLocale}
       dir={dir}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${sourceSans.variable} ${sourceMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider locale={validLocale} messages={messages}>
