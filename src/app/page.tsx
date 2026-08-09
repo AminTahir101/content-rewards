@@ -2,7 +2,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import {
   ArrowRight,
-  CheckCircle,
   TrendUp,
   UsersThree,
   Shield,
@@ -10,6 +9,7 @@ import {
   ChartLineUp,
   Play,
 } from '@phosphor-icons/react/dist/ssr'
+import { getTranslations, getLocale } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 import MarketingNav from '@/components/marketing/MarketingNav'
 import FAQAccordion from '@/components/marketing/FAQAccordion'
@@ -69,23 +69,32 @@ const CAMPAIGN_SEEDS = [
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  const campaigns = await getHotCampaigns()
+  const [campaigns, t, locale] = await Promise.all([
+    getHotCampaigns(),
+    getTranslations('marketing'),
+    getLocale(),
+  ])
   const featured = campaigns[0]
   const rest = campaigns.slice(1)
 
+  const faqItems = Array.from({ length: 6 }, (_, i) => ({
+    q: t(`faq.items.${i}.q`),
+    a: t(`faq.items.${i}.a`),
+  }))
+
   return (
     <div className="min-h-[100dvh] bg-white text-zinc-900">
-      <MarketingNav />
+      <MarketingNav locale={locale} />
 
       {/* ─────────────────────────────────────────────────────────────
           HERO
-          Layout family: edge-bleeding full-height photo (absolute right),
-          copy hard-left — no grid column, no floating cards
+          Layout family: edge-bleeding full-height photo (absolute end),
+          copy hard-start — no grid column, no floating cards
       ───────────────────────────────────────────────────────────── */}
       <section className="relative min-h-[100dvh] bg-white flex items-center overflow-hidden">
 
-        {/* Edge-bleeding photo — absolute, right half */}
-        <div className="absolute top-0 right-0 bottom-0 w-[52%] hidden lg:block pointer-events-none">
+        {/* Edge-bleeding photo — absolute, inline-end half */}
+        <div className="absolute inset-y-0 end-0 w-[52%] hidden lg:block pointer-events-none">
           <Image
             src="https://d8j0ntlcm91z4.cloudfront.net/user_3GSqHKoPVu8jjSvOXL6Aq0ehOQc/hf_20260809_113747_e3163e91-2104-42c4-9bb8-2235df32edce.png"
             alt=""
@@ -93,25 +102,25 @@ export default async function HomePage() {
             priority
             className="object-cover object-top"
           />
-          {/* Left fade to white */}
-          <div className="absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-white to-transparent z-10" />
+          {/* Start fade to white */}
+          <div className="absolute inset-y-0 start-0 w-48 ltr:bg-gradient-to-r rtl:bg-gradient-to-l from-white to-transparent z-10" />
           {/* Bottom fade to white */}
-          <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-white to-transparent z-10" />
+          <div className="absolute bottom-0 start-0 end-0 h-28 bg-gradient-to-t from-white to-transparent z-10" />
         </div>
 
-        {/* Copy — left column only, never overlapping image */}
+        {/* Copy — start column only, never overlapping image */}
         <div className="relative z-10 max-w-[1400px] mx-auto px-6 w-full py-32 lg:py-0">
           <div className="max-w-[560px]">
             <RevealUp>
-              <h1 className="text-[64px] sm:text-[80px] lg:text-[90px] font-black tracking-[-0.04em] leading-[0.93] text-zinc-950 mb-8">
-                Earn from<br />
-                <em className="not-italic text-green-600">every view.</em>
+              <h1 className="text-[64px] sm:text-[80px] lg:text-[90px] font-black tracking-[-0.04em] leading-[0.93] rtl:leading-[1.15] text-zinc-950 mb-8">
+                {t('hero.headline1')}<br />
+                <em className="not-italic text-green-600">{t('hero.headline2')}</em>
               </h1>
             </RevealUp>
 
             <RevealUp delay={0.06}>
               <p className="text-[18px] text-zinc-500 leading-relaxed mb-10 max-w-[440px]">
-                Join 50,000 Saudi creators getting paid by top brands — per verified view, automatically.
+                {t('hero.subtext')}
               </p>
             </RevealUp>
 
@@ -121,14 +130,14 @@ export default async function HomePage() {
                   href="/register"
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white font-black px-8 py-4 text-[16px] transition-all"
                 >
-                  Start Earning Free
-                  <ArrowRight size={18} weight="bold" />
+                  {t('hero.ctaPrimary')}
+                  <ArrowRight size={18} weight="bold" className="rtl:rotate-180" />
                 </Link>
                 <Link
                   href="/discover"
                   className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-zinc-700 font-semibold px-8 py-4 text-[16px] transition-all"
                 >
-                  Browse Campaigns
+                  {t('hero.ctaSecondary')}
                 </Link>
               </div>
             </RevealUp>
@@ -138,7 +147,7 @@ export default async function HomePage() {
               <div className="mt-12 inline-flex items-center gap-3 px-4 py-2.5 rounded-full border border-zinc-200 bg-zinc-50">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 <span className="text-[13px] font-semibold text-zinc-600">
-                  {campaigns.length > 0 ? campaigns.length : '40'}+ campaigns paying right now
+                  {t('hero.liveBadge', { count: campaigns.length > 0 ? campaigns.length : '40' })}
                 </span>
               </div>
             </RevealUp>
@@ -158,7 +167,7 @@ export default async function HomePage() {
       <section className="bg-zinc-950 py-5">
         <div className="mb-4 px-6">
           <p className="text-[10px] font-bold text-white/25 uppercase tracking-[0.2em] text-center">
-            Brands running campaigns now
+            {t('brandsStrip.label')}
           </p>
         </div>
         <BrandMarquee />
@@ -171,18 +180,13 @@ export default async function HomePage() {
       <section className="py-24 bg-white">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-zinc-100">
-            {[
-              { value: 'SAR 12M+', label: 'Paid to creators',  detail: 'and counting' },
-              { value: '800M+',    label: 'Verified views',    detail: 'fraud-screened' },
-              { value: '50,000+', label: 'Active creators',    detail: 'across KSA' },
-              { value: '40+',     label: 'Live campaigns',     detail: 'right now' },
-            ].map(({ value, label, detail }, i) => (
-              <RevealStagger key={label} delay={i * 0.07} className="px-8 first:pl-0 last:pr-0 py-6">
+            {([0, 1, 2, 3] as const).map((i) => (
+              <RevealStagger key={i} delay={i * 0.07} className="px-8 first:ps-0 last:pe-0 py-6">
                 <p className="text-[40px] sm:text-[48px] font-black text-zinc-950 tracking-[-0.03em] leading-none">
-                  {value}
+                  {t(`stats.${i}.value`)}
                 </p>
-                <p className="text-[14px] font-semibold text-zinc-700 mt-3">{label}</p>
-                <p className="text-[13px] text-zinc-400 mt-0.5">{detail}</p>
+                <p className="text-[14px] font-semibold text-zinc-700 mt-3">{t(`stats.${i}.label`)}</p>
+                <p className="text-[13px] text-zinc-400 mt-0.5">{t(`stats.${i}.detail`)}</p>
               </RevealStagger>
             ))}
           </div>
@@ -199,7 +203,7 @@ export default async function HomePage() {
           <div className="flex items-end justify-between mb-10">
             <RevealUp>
               <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight">
-                Live campaigns
+                {t('campaigns.title')}
               </h2>
             </RevealUp>
             <RevealUp delay={0.04}>
@@ -207,7 +211,7 @@ export default async function HomePage() {
                 href="/discover"
                 className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-green-600 hover:text-green-700 transition-colors"
               >
-                View all <ArrowRight size={15} weight="bold" />
+                {t('campaigns.viewAll')} <ArrowRight size={15} weight="bold" className="rtl:rotate-180" />
               </Link>
             </RevealUp>
           </div>
@@ -260,21 +264,21 @@ export default async function HomePage() {
                           <p className="text-[42px] font-black text-green-600 tracking-tight leading-none">
                             SAR {featured.cpm}
                           </p>
-                          <p className="text-[13px] font-semibold text-zinc-400 mt-1">per 1,000 verified views</p>
+                          <p className="text-[13px] font-semibold text-zinc-400 mt-1">{t('campaigns.perViews')}</p>
                         </>
                       )}
                     </div>
                     {featured.maxCreatorPayout && (
                       <div>
-                        <p className="text-[13px] font-semibold text-zinc-400">Max payout</p>
+                        <p className="text-[13px] font-semibold text-zinc-400">{t('campaigns.maxPayout')}</p>
                         <p className="text-[18px] font-black text-zinc-800">
                           SAR {parseFloat(featured.maxCreatorPayout).toLocaleString('en-SA')}
                         </p>
                       </div>
                     )}
-                    <div className="ml-auto">
+                    <div className="ms-auto">
                       <span className="inline-flex items-center gap-2 bg-green-600 group-hover:bg-green-700 text-white font-bold px-5 py-3 rounded-xl text-[14px] transition-colors">
-                        Join campaign <ArrowRight size={15} weight="bold" />
+                        {t('campaigns.join')} <ArrowRight size={15} weight="bold" className="rtl:rotate-180" />
                       </span>
                     </div>
                   </div>
@@ -317,21 +321,21 @@ export default async function HomePage() {
                           </span>
                         ))}
                       </div>
-                      <div className="hidden lg:block shrink-0 text-right">
-                        <p className="text-[11px] font-semibold text-zinc-400">Budget left</p>
+                      <div className="hidden lg:block shrink-0 text-end">
+                        <p className="text-[11px] font-semibold text-zinc-400">{t('campaigns.budgetLeft')}</p>
                         <p className="text-[13px] font-bold text-zinc-700">
                           SAR {remaining.toLocaleString('en-SA', { maximumFractionDigits: 0 })}
                         </p>
                       </div>
                       {c.cpm && (
-                        <div className="shrink-0 text-right">
+                        <div className="shrink-0 text-end">
                           <p className="text-[20px] font-black text-green-600 leading-none">
                             SAR {c.cpm}
                           </p>
                           <p className="text-[10px] font-semibold text-zinc-400 mt-0.5">CPM</p>
                         </div>
                       )}
-                      <ArrowRight size={16} weight="bold" className="shrink-0 text-zinc-300 group-hover:text-green-600 transition-colors" />
+                      <ArrowRight size={16} weight="bold" className="shrink-0 text-zinc-300 group-hover:text-green-600 transition-colors rtl:rotate-180" />
                     </Link>
                   </RevealUp>
                 )
@@ -353,47 +357,41 @@ export default async function HomePage() {
             {/* Steps */}
             <div>
               <RevealUp className="mb-12">
-                <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight">
-                  From zero to payout<br />in three steps.
+                <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight whitespace-pre-line">
+                  {t('howItWorks.title')}
                 </h2>
               </RevealUp>
 
               <div className="space-y-0 divide-y divide-zinc-100">
-                {[
-                  {
-                    n: '01',
-                    icon: <UsersThree size={20} weight="fill" className="text-green-600" />,
-                    title: 'Join a campaign',
-                    body: 'Browse active brand campaigns, filter by niche and platform, and join with one tap. No pitch needed.',
-                  },
-                  {
-                    n: '02',
-                    icon: <Play size={20} weight="fill" className="text-green-600" />,
-                    title: 'Create and submit',
-                    body: 'Follow the creative brief, publish on your social account, then paste the post URL. Done in under a minute.',
-                  },
-                  {
-                    n: '03',
-                    icon: <CurrencyDollar size={20} weight="fill" className="text-green-600" />,
-                    title: 'Collect your earnings',
-                    body: 'Views are independently verified and your reward lands in your wallet automatically. Withdraw any time.',
-                  },
-                ].map(({ n, icon, title, body }, i) => (
-                  <RevealUp key={n} delay={i * 0.08}>
-                    <div className="flex gap-6 py-8">
-                      <div className="shrink-0 mt-0.5">
-                        <p className="text-[11px] font-black text-zinc-300 tracking-widest mb-3">{n}</p>
-                        <div className="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center">
-                          {icon}
+                {([0, 1, 2] as const).map((i, idx) => {
+                  const icons = [
+                    <UsersThree key="users" size={20} weight="fill" className="text-green-600" />,
+                    <Play key="play" size={20} weight="fill" className="text-green-600" />,
+                    <CurrencyDollar key="dollar" size={20} weight="fill" className="text-green-600" />,
+                  ]
+                  return (
+                    <RevealUp key={i} delay={idx * 0.08}>
+                      <div className="flex gap-6 py-8">
+                        <div className="shrink-0 mt-0.5">
+                          <p className="text-[11px] font-black text-zinc-300 tracking-widest mb-3">
+                            {t(`howItWorks.steps.${i}.num`)}
+                          </p>
+                          <div className="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center">
+                            {icons[idx]}
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-[18px] font-black tracking-tight text-zinc-900 mb-2">
+                            {t(`howItWorks.steps.${i}.title`)}
+                          </h3>
+                          <p className="text-[15px] text-zinc-500 leading-relaxed max-w-[380px]">
+                            {t(`howItWorks.steps.${i}.body`)}
+                          </p>
                         </div>
                       </div>
-                      <div>
-                        <h3 className="text-[18px] font-black tracking-tight text-zinc-900 mb-2">{title}</h3>
-                        <p className="text-[15px] text-zinc-500 leading-relaxed max-w-[380px]">{body}</p>
-                      </div>
-                    </div>
-                  </RevealUp>
-                ))}
+                    </RevealUp>
+                  )
+                })}
               </div>
 
               <RevealUp delay={0.3}>
@@ -402,7 +400,7 @@ export default async function HomePage() {
                     href="/register"
                     className="inline-flex items-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white font-black px-7 py-3.5 text-[15px] transition-all"
                   >
-                    Get started free <ArrowRight size={16} weight="bold" />
+                    {t('howItWorks.cta')} <ArrowRight size={16} weight="bold" className="rtl:rotate-180" />
                   </Link>
                 </div>
               </RevealUp>
@@ -418,10 +416,12 @@ export default async function HomePage() {
                   className="object-cover"
                 />
                 {/* Earnings badge overlay */}
-                <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-sm rounded-xl px-5 py-4 border border-zinc-200/80">
+                <div className="absolute bottom-6 start-6 end-6 bg-white/95 backdrop-blur-sm rounded-xl px-5 py-4 border border-zinc-200/80">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Latest payout</p>
+                      <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-1">
+                        {t('howItWorks.latestPayout')}
+                      </p>
                       <p className="text-[26px] font-black text-zinc-900 tracking-tight">SAR 3,840</p>
                     </div>
                     <div className="flex items-center gap-1.5 text-green-600">
@@ -446,10 +446,10 @@ export default async function HomePage() {
 
           <RevealUp className="mb-10">
             <p className="text-[11px] font-black text-green-500 uppercase tracking-[0.18em] mb-4">
-              For brands and agencies
+              {t('forBrands.eyebrow')}
             </p>
-            <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight text-white max-w-xl">
-              Pay for verified views.<br />Not for promises.
+            <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight text-white max-w-xl whitespace-pre-line">
+              {t('forBrands.title')}
             </h2>
           </RevealUp>
 
@@ -463,7 +463,7 @@ export default async function HomePage() {
                   4.8<span className="text-green-500">×</span>
                 </p>
                 <p className="text-[15px] font-semibold text-zinc-400 leading-snug max-w-[200px]">
-                  Average ROI vs. display advertising
+                  {t('forBrands.roi')}
                 </p>
               </div>
               <div className="mt-8">
@@ -471,7 +471,7 @@ export default async function HomePage() {
                   href="/register"
                   className="inline-flex items-center gap-2 rounded-xl bg-white text-zinc-900 font-black px-6 py-3 text-[14px] hover:bg-zinc-100 active:scale-[0.98] transition-all"
                 >
-                  Launch a campaign <ArrowRight size={15} weight="bold" />
+                  {t('forBrands.cta')} <ArrowRight size={15} weight="bold" className="rtl:rotate-180" />
                 </Link>
               </div>
             </RevealUp>
@@ -482,9 +482,9 @@ export default async function HomePage() {
                 <Shield size={20} weight="fill" className="text-green-500" />
               </div>
               <div>
-                <p className="text-[17px] font-black text-white mb-1.5">Fraud detection built in</p>
+                <p className="text-[17px] font-black text-white mb-1.5">{t('forBrands.fraudTitle')}</p>
                 <p className="text-[13px] text-zinc-500 leading-relaxed">
-                  Every submission is screened for fake views, bot traffic, and inflated metrics before your budget moves.
+                  {t('forBrands.fraudBody')}
                 </p>
               </div>
             </RevealStagger>
@@ -495,9 +495,9 @@ export default async function HomePage() {
                 <ChartLineUp size={20} weight="fill" className="text-green-500" />
               </div>
               <div>
-                <p className="text-[17px] font-black text-white mb-1.5">Real-time campaign dashboard</p>
+                <p className="text-[17px] font-black text-white mb-1.5">{t('forBrands.dashTitle')}</p>
                 <p className="text-[13px] text-zinc-500 leading-relaxed">
-                  Track verified views, creator performance, spend rate, and remaining budget live, per campaign.
+                  {t('forBrands.dashBody')}
                 </p>
               </div>
             </RevealStagger>
@@ -511,9 +511,11 @@ export default async function HomePage() {
                 className="object-cover opacity-20"
               />
               <div className="relative z-10 p-7 flex flex-col justify-end h-full">
-                <p className="text-[36px] font-black text-white tracking-tight leading-none">50,000+</p>
+                <p className="text-[36px] font-black text-white tracking-tight leading-none">
+                  {t('forBrands.networkStat')}
+                </p>
                 <p className="text-[13px] font-semibold text-zinc-400 mt-1.5">
-                  verified creators across KSA, UAE and Kuwait
+                  {t('forBrands.networkLabel')}
                 </p>
               </div>
             </RevealStagger>
@@ -531,7 +533,7 @@ export default async function HomePage() {
 
           <RevealUp className="mb-10">
             <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight">
-              Creators who are winning.
+              {t('testimonials.title')}
             </h2>
           </RevealUp>
 
@@ -547,30 +549,25 @@ export default async function HomePage() {
               <div className="absolute inset-0 bg-zinc-950/70" />
               <div className="relative z-10 p-10 sm:p-14 max-w-[780px]">
                 <p className="text-[22px] sm:text-[28px] font-semibold text-white leading-snug mb-6">
-                  "I made more from one campaign than I used to earn in a full month. The process is completely transparent."
+                  {t('testimonials.featuredQuote')}
                 </p>
-                <p className="text-[15px] font-black text-white">Sarah A.</p>
-                <p className="text-[13px] text-white/50 mt-0.5">@saraha_ksa, TikTok</p>
-                <p className="text-[28px] font-black text-green-400 mt-3">SAR 18,400 earned</p>
+                <p className="text-[15px] font-black text-white">{t('testimonials.featuredName')}</p>
+                <p className="text-[13px] text-white/50 mt-0.5">{t('testimonials.featuredHandle')}</p>
+                <p className="text-[28px] font-black text-green-400 mt-3">{t('testimonials.featuredAmount')}</p>
               </div>
             </div>
           </RevealUp>
 
           {/* Compact creator grid — 4 col, no images, just name + earnings */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {[
-              { name: 'Mohammed K.', handle: '@mkgaming, YouTube',      amount: 'SAR 32,000', quote: 'Completely transparent CPM tracking.' },
-              { name: 'Khalid M.',   handle: '@khalidm_sa, TikTok',     amount: 'SAR 24,500', quote: 'Joined three campaigns at once, easy.' },
-              { name: 'Lana R.',     handle: '@lanarlife, Instagram',    amount: 'SAR 9,700',  quote: 'Payments always on time, no chasing.' },
-              { name: 'Faisal T.',   handle: '@faisaltech, YouTube',     amount: 'SAR 41,800', quote: 'Long-form tech reviews pay incredibly well.' },
-            ].map(({ name, handle, amount, quote }, i) => (
-              <RevealStagger key={name} delay={i * 0.06}>
+            {([0, 1, 2, 3] as const).map((i, idx) => (
+              <RevealStagger key={i} delay={idx * 0.06}>
                 <div className="bg-white border border-zinc-200 rounded-xl p-5 flex flex-col justify-between h-full gap-4">
-                  <p className="text-[13px] text-zinc-500 leading-relaxed">"{quote}"</p>
+                  <p className="text-[13px] text-zinc-500 leading-relaxed">"{t(`testimonials.cards.${i}.quote`)}"</p>
                   <div>
-                    <p className="text-[20px] font-black text-green-600">{amount}</p>
-                    <p className="text-[13px] font-semibold text-zinc-900 mt-1">{name}</p>
-                    <p className="text-[11px] text-zinc-400">{handle}</p>
+                    <p className="text-[20px] font-black text-green-600">{t(`testimonials.cards.${i}.amount`)}</p>
+                    <p className="text-[13px] font-semibold text-zinc-900 mt-1">{t(`testimonials.cards.${i}.name`)}</p>
+                    <p className="text-[11px] text-zinc-400">{t(`testimonials.cards.${i}.handle`)}</p>
                   </div>
                 </div>
               </RevealStagger>
@@ -589,11 +586,11 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-16">
             <RevealUp>
               <h2 className="text-[36px] sm:text-[40px] font-black tracking-[-0.025em] leading-tight sticky top-28">
-                Common questions.
+                {t('faq.title')}
               </h2>
             </RevealUp>
             <RevealUp delay={0.05}>
-              <FAQAccordion />
+              <FAQAccordion items={faqItems} />
             </RevealUp>
           </div>
         </div>
@@ -608,15 +605,15 @@ export default async function HomePage() {
         <div className="max-w-[1400px] mx-auto px-6">
           <RevealUp>
             <p className="text-[13px] font-black text-green-500 uppercase tracking-[0.18em] mb-6">
-              Get started today
+              {t('cta.eyebrow')}
             </p>
             <h2 className="text-[48px] sm:text-[64px] lg:text-[76px] font-black tracking-[-0.04em] leading-[0.95] text-white mb-8 max-w-3xl">
-              Your content is already worth money.
+              {t('cta.headline')}
             </h2>
           </RevealUp>
           <RevealUp delay={0.06}>
             <p className="text-[18px] text-zinc-400 mb-12 max-w-[480px] leading-relaxed">
-              Takes 2 minutes. Join 50,000 Saudi creators already earning on their terms.
+              {t('cta.subtext')}
             </p>
           </RevealUp>
           <RevealUp delay={0.1}>
@@ -625,13 +622,13 @@ export default async function HomePage() {
                 href="/register"
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white font-black px-8 py-4 text-[16px] transition-all"
               >
-                Create Free Account <ArrowRight size={18} weight="bold" />
+                {t('cta.primary')} <ArrowRight size={18} weight="bold" className="rtl:rotate-180" />
               </Link>
               <Link
                 href="/discover"
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 hover:border-white/20 hover:bg-white/5 text-zinc-300 font-semibold px-8 py-4 text-[16px] transition-all"
               >
-                Browse campaigns
+                {t('cta.secondary')}
               </Link>
             </div>
           </RevealUp>
@@ -648,23 +645,23 @@ export default async function HomePage() {
               <p className="font-black text-[18px] text-white tracking-tight">
                 Content<span className="text-green-500">Rewards</span>
               </p>
-              <p className="text-[13px] text-zinc-600 mt-1.5">Saudi Arabia's creator performance platform</p>
+              <p className="text-[13px] text-zinc-600 mt-1.5">{t('footer.tagline')}</p>
             </div>
             <nav className="flex flex-wrap gap-x-8 gap-y-2 text-[14px] text-zinc-500">
               {[
-                { label: 'Campaigns', href: '/discover' },
-                { label: 'How it works', href: '/#how-it-works' },
-                { label: 'For Brands', href: '/#for-brands' },
-                { label: 'FAQ', href: '/#faq' },
-                { label: 'Log in', href: '/login' },
-                { label: 'Register', href: '/register' },
+                { label: t('nav.campaigns'),   href: '/discover' },
+                { label: t('nav.howItWorks'),  href: '/#how-it-works' },
+                { label: t('nav.forBrands'),   href: '/#for-brands' },
+                { label: t('nav.faq'),         href: '/#faq' },
+                { label: t('nav.login'),       href: '/login' },
+                { label: t('nav.startEarning'),href: '/register' },
               ].map(({ label, href }) => (
                 <Link key={href} href={href} className="hover:text-white transition-colors">{label}</Link>
               ))}
             </nav>
           </div>
           <p className="text-[12px] text-zinc-700 mt-8">
-            &copy; {new Date().getFullYear()} Content Rewards. All rights reserved.
+            {t('footer.copyright', { year: new Date().getFullYear() })}
           </p>
         </div>
       </footer>

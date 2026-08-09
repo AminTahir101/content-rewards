@@ -59,5 +59,98 @@
     "verifiedViews": "Verified Views",
     "activeCampaigns": "Active Campaigns",
     "pendingReviews": "Pending Reviews"
+  },
+  "marketing": {
+    "nav": {
+      "campaigns": "Campaigns",
+      "howItWorks": "How it works",
+      "forBrands": "For Brands",
+      "faq": "FAQ",
+      "login": "Log in",
+      "startEarning": "Start Earning",
+      "switchLang": "عربي"
+    },
+    "hero": {
+      "headline1": "Earn from",
+      "headline2": "every view.",
+      "subtext": "Join 50,000 Saudi creators getting paid by top brands — per verified view, automatically.",
+      "ctaPrimary": "Start Earning Free",
+      "ctaSecondary": "Browse Campaigns",
+      "liveBadge": "{count}+ campaigns paying right now"
+    },
+    "brandsStrip": {
+      "label": "Brands running campaigns now"
+    },
+    "stats": {
+      "0": { "value": "SAR 12M+", "label": "Paid to creators",  "detail": "and counting" },
+      "1": { "value": "800M+",    "label": "Verified views",    "detail": "fraud-screened" },
+      "2": { "value": "50,000+", "label": "Active creators",    "detail": "across KSA" },
+      "3": { "value": "40+",     "label": "Live campaigns",     "detail": "right now" }
+    },
+    "campaigns": {
+      "title": "Live campaigns",
+      "viewAll": "View all",
+      "perViews": "per 1,000 verified views",
+      "maxPayout": "Max payout",
+      "budgetLeft": "Budget left",
+      "join": "Join campaign"
+    },
+    "howItWorks": {
+      "title": "From zero to payout\nin three steps.",
+      "steps": {
+        "0": { "num": "01", "title": "Join a campaign",       "body": "Browse active brand campaigns, filter by niche and platform, and join with one tap. No pitch needed." },
+        "1": { "num": "02", "title": "Create and submit",     "body": "Follow the creative brief, publish on your social account, then paste the post URL. Done in under a minute." },
+        "2": { "num": "03", "title": "Collect your earnings", "body": "Views are independently verified and your reward lands in your wallet automatically. Withdraw any time." }
+      },
+      "cta": "Get started free",
+      "latestPayout": "Latest payout"
+    },
+    "forBrands": {
+      "eyebrow": "For brands and agencies",
+      "title": "Pay for verified views.\nNot for promises.",
+      "roi": "Average ROI vs. display advertising",
+      "fraudTitle": "Fraud detection built in",
+      "fraudBody": "Every submission is screened for fake views, bot traffic, and inflated metrics before your budget moves.",
+      "dashTitle": "Real-time campaign dashboard",
+      "dashBody": "Track verified views, creator performance, spend rate, and remaining budget live, per campaign.",
+      "networkStat": "50,000+",
+      "networkLabel": "verified creators across KSA, UAE and Kuwait",
+      "cta": "Launch a campaign"
+    },
+    "testimonials": {
+      "title": "Creators who are winning.",
+      "featuredQuote": "\"I made more from one campaign than I used to earn in a full month. The process is completely transparent.\"",
+      "featuredName": "Sarah A.",
+      "featuredHandle": "@saraha_ksa, TikTok",
+      "featuredAmount": "SAR 18,400 earned",
+      "cards": {
+        "0": { "quote": "Completely transparent CPM tracking.",        "name": "Mohammed K.", "handle": "@mkgaming, YouTube",    "amount": "SAR 32,000" },
+        "1": { "quote": "Joined three campaigns at once, easy.",       "name": "Khalid M.",   "handle": "@khalidm_sa, TikTok",  "amount": "SAR 24,500" },
+        "2": { "quote": "Payments always on time, no chasing.",        "name": "Lana R.",     "handle": "@lanarlife, Instagram", "amount": "SAR 9,700"  },
+        "3": { "quote": "Long-form tech reviews pay incredibly well.", "name": "Faisal T.",   "handle": "@faisaltech, YouTube",  "amount": "SAR 41,800" }
+      }
+    },
+    "faq": {
+      "title": "Common questions.",
+      "items": {
+        "0": { "q": "How do I start earning?",              "a": "Register, browse campaigns, join one that fits your niche, publish your content, then paste the URL. Once verified and approved, earnings land in your wallet automatically." },
+        "1": { "q": "What follower count do I need?",       "a": "Requirements vary by campaign — some are open from 1,000 followers, premium campaigns may require 20,000+. Each campaign page shows the exact minimum." },
+        "2": { "q": "How is my reward calculated?",         "a": "Most campaigns pay CPM — cost per thousand verified views. A SAR 12 CPM campaign pays SAR 12 for every 1,000 views your content earns. Calculations are automatic and fully transparent." },
+        "3": { "q": "How quickly do I get paid?",           "a": "After your content is approved and the tracking window closes, earnings move to your wallet. Withdrawals to Saudi bank accounts are processed on a regular cycle." },
+        "4": { "q": "Which platforms are supported?",       "a": "TikTok, Instagram, YouTube, and X. Each campaign specifies which platforms are accepted." },
+        "5": { "q": "Is Content Rewards free for creators?","a": "Yes — free to join, free to participate. The platform earns a small fee from campaign budgets; creators keep the majority of every reward." }
+      }
+    },
+    "cta": {
+      "eyebrow": "Get started today",
+      "headline": "Your content is already worth money.",
+      "subtext": "Takes 2 minutes. Join 50,000 Saudi creators already earning on their terms.",
+      "primary": "Create Free Account",
+      "secondary": "Browse campaigns"
+    },
+    "footer": {
+      "tagline": "Saudi Arabia's creator performance platform",
+      "copyright": "© {year} Content Rewards. All rights reserved."
+    }
   }
 }

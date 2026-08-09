@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Source_Sans_3, Source_Code_Pro } from 'next/font/google'
+import { Source_Sans_3, Source_Code_Pro, Tajawal } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { cookies } from 'next/headers'
 import './globals.css'
@@ -14,6 +14,12 @@ const sourceMono = Source_Code_Pro({
   variable: '--font-mono',
   subsets: ['latin'],
   weight: ['400', '600'],
+})
+
+const tajawal = Tajawal({
+  variable: '--font-arabic',
+  subsets: ['arabic'],
+  weight: ['400', '500', '700', '800', '900'],
 })
 
 export const metadata: Metadata = {
@@ -32,7 +38,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html
       lang={validLocale}
       dir={dir}
-      className={`${sourceSans.variable} ${sourceMono.variable} h-full antialiased`}
+      className={`${sourceSans.variable} ${sourceMono.variable} ${tajawal.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider locale={validLocale} messages={messages}>

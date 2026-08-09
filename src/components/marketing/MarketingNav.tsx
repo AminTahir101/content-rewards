@@ -3,9 +3,19 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { List, X } from '@phosphor-icons/react'
+import { useTranslations } from 'next-intl'
+import LocaleToggle from './LocaleToggle'
 
-export default function MarketingNav() {
+export default function MarketingNav({ locale }: { locale: string }) {
   const [open, setOpen] = useState(false)
+  const t = useTranslations('marketing.nav')
+
+  const navLinks = [
+    { label: t('campaigns'),   href: '/discover' },
+    { label: t('howItWorks'),  href: '/#how-it-works' },
+    { label: t('forBrands'),   href: '/#for-brands' },
+    { label: t('faq'),         href: '/#faq' },
+  ]
 
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/95 backdrop-blur-md">
@@ -15,12 +25,7 @@ export default function MarketingNav() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
-          {[
-            { label: 'Campaigns', href: '/discover' },
-            { label: 'How it works', href: '/#how-it-works' },
-            { label: 'For Brands', href: '/#for-brands' },
-            { label: 'FAQ', href: '/#faq' },
-          ].map(({ label, href }) => (
+          {navLinks.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
@@ -31,15 +36,16 @@ export default function MarketingNav() {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-3 ms-auto">
+          <LocaleToggle current={locale} label={t('switchLang')} />
           <Link href="/login" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
-            Log in
+            {t('login')}
           </Link>
           <Link
             href="/register"
             className="text-sm font-bold bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white px-4 py-2 rounded-lg transition-all"
           >
-            Start Earning
+            {t('startEarning')}
           </Link>
         </div>
 
@@ -54,12 +60,7 @@ export default function MarketingNav() {
 
       {open && (
         <div className="md:hidden border-t border-zinc-200 bg-white px-6 py-5 space-y-1">
-          {[
-            { label: 'Campaigns', href: '/discover' },
-            { label: 'How it works', href: '/#how-it-works' },
-            { label: 'For Brands', href: '/#for-brands' },
-            { label: 'FAQ', href: '/#faq' },
-          ].map(({ label, href }) => (
+          {navLinks.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
@@ -69,9 +70,10 @@ export default function MarketingNav() {
               {label}
             </Link>
           ))}
-          <div className="flex gap-3 pt-4">
-            <Link href="/login" className="flex-1 text-center text-sm border border-zinc-200 text-zinc-700 px-4 py-2.5 rounded-lg">Log in</Link>
-            <Link href="/register" className="flex-1 text-center text-sm font-bold bg-green-600 text-white px-4 py-2.5 rounded-lg">Start Earning</Link>
+          <div className="flex gap-3 pt-4 items-center">
+            <LocaleToggle current={locale} label={t('switchLang')} />
+            <Link href="/login" className="flex-1 text-center text-sm border border-zinc-200 text-zinc-700 px-4 py-2.5 rounded-lg">{t('login')}</Link>
+            <Link href="/register" className="flex-1 text-center text-sm font-bold bg-green-600 text-white px-4 py-2.5 rounded-lg">{t('startEarning')}</Link>
           </div>
         </div>
       )}

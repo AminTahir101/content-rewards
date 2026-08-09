@@ -3,6 +3,8 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant rtl (&:is([dir="rtl"] *));
+@custom-variant ltr (&:is([dir="ltr"] *));
 
 @theme inline {
   --color-background: var(--background);
@@ -120,6 +122,19 @@
 @keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
+}
+
+/* Arabic font override */
+html[lang="ar"] {
+  font-family: var(--font-arabic), system-ui, sans-serif;
+}
+
+/* Arabic display type: relax tight tracking and line-height */
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3 {
+  letter-spacing: 0;
+  line-height: 1.25;
 }
 
 @layer base {
