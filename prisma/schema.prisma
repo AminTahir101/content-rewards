@@ -151,6 +151,7 @@ model Organization {
 
   members      OrganizationMember[]
   brandProfile BrandProfile?
+  campaigns    Campaign[]
 
   @@map("organizations")
 }
@@ -183,4 +184,112 @@ model BrandProfile {
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("brand_profiles")
+}
+
+// ─── Campaigns ───────────────────────────────────────────────────────────────
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum RewardModel {
+  CPM
+  CPV
+  CPA
+  FIXED
+  HYBRID
+  MILESTONE
+}
+
+enum SocialPlatform {
+  TIKTOK
+  INSTAGRAM
+  YOUTUBE
+  X
+}
+
+enum CampaignCategory {
+  LIFESTYLE
+  ENTERTAINMENT
+  GAMING
+  TECHNOLOGY
+  FOOD
+  FASHION
+  BEAUTY
+  TRAVEL
+  SPORTS
+  EDUCATION
+  FINANCE
+  OTHER
+}
+
+model Campaign {
+  id                 String           @id @default(uuid())
+  organizationId     String
+  name               String
+  slug               String           @unique
+  coverUrl           String?
+  description        String?          @db.Text
+  objective          String?          @db.Text
+  category           CampaignCategory @default(OTHER)
+  status             CampaignStatus   @default(DRAFT)
+  rewardModel        RewardModel      @default(CPM)
+  cpm                Decimal?         @db.Decimal(10, 4)
+  minPayout          Decimal          @default(0) @db.Decimal(10, 2)
+  maxCreatorPayout   Decimal?         @db.Decimal(10, 2)
+  totalBudget        Decimal          @default(0) @db.Decimal(14, 2)
+  reservedBudget     Decimal          @default(0) @db.Decimal(14, 2)
+  settledBudget      Decimal          @default(0) @db.Decimal(14, 2)
+  maxSubmissions     Int?
+  countries          String[]         @default(["SA"])
+  languages          String[]         @default(["ar"])
+  minFollowers       Int              @default(0)
+  requiredHashtags   String[]
+  requiredMentions   String[]
+  contentBrief       String?          @db.Text
+  contentDos         String[]
+  contentDonts       String[]
+  startDate          DateTime?
+  endDate            DateTime?
+  participantCount   Int              @default(0)
+  submissionCount    Int              @default(0)
+  verifiedViews      BigInt           @default(0)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  organization Organization       @relation(fields: [organizationId], references: [id])
+  platforms    CampaignPlatform[]
+  participants CampaignParticipant[]
+
+  @@index([status, createdAt])
+  @@index([organizationId])
+  @@map("campaigns")
+}
+
+model CampaignPlatform {
+  id         String         @id @default(uuid())
+  campaignId String
+  platform   SocialPlatform
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, platform])
+  @@map("campaign_platforms")
+}
+
+model CampaignParticipant {
+  id         String   @id @default(uuid())
+  campaignId String
+  userId     String
+  joinedAt   DateTime @default(now())
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, userId])
+  @@index([userId])
+  @@map("campaign_participants")
 }
