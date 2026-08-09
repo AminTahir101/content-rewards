@@ -261,9 +261,10 @@ model Campaign {
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 
-  organization Organization       @relation(fields: [organizationId], references: [id])
+  organization Organization         @relation(fields: [organizationId], references: [id])
   platforms    CampaignPlatform[]
   participants CampaignParticipant[]
+  submissions  Submission[]
 
   @@index([status, createdAt])
   @@index([organizationId])
@@ -292,4 +293,43 @@ model CampaignParticipant {
   @@unique([campaignId, userId])
   @@index([userId])
   @@map("campaign_participants")
+}
+
+// ─── Submissions ──────────────────────────────────────────────────────────────
+
+enum SubmissionStatus {
+  DRAFT
+  SUBMITTED
+  VERIFYING
+  PENDING_REVIEW
+  APPROVED
+  TRACKING
+  PERFORMANCE_LOCKED
+  PAYOUT_PENDING
+  PAID
+  REJECTED
+  FLAGGED
+  DISPUTED
+  PAYMENT_HOLD
+}
+
+model Submission {
+  id           String           @id @default(uuid())
+  campaignId   String
+  userId       String
+  contentUrl   String
+  platform     SocialPlatform
+  status       SubmissionStatus @default(SUBMITTED)
+  rejectionReason String?      @db.Text
+  earnedAmount Decimal?         @db.Decimal(14, 2)
+  submittedAt  DateTime         @default(now())
+  reviewedAt   DateTime?
+  updatedAt    DateTime         @updatedAt
+
+  campaign Campaign @relation(fields: [campaignId], references: [id])
+
+  @@index([userId])
+  @@index([campaignId])
+  @@index([userId, campaignId])
+  @@map("submissions")
 }
