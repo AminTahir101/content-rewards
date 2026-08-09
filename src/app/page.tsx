@@ -87,7 +87,7 @@ export default async function HomePage() {
         {/* Edge-bleeding photo — absolute, right half */}
         <div className="absolute top-0 right-0 bottom-0 w-[52%] hidden lg:block pointer-events-none">
           <Image
-            src="https://picsum.photos/seed/saudi-creator-studio-portrait/900/1100"
+            src="https://d8j0ntlcm91z4.cloudfront.net/user_3GSqHKoPVu8jjSvOXL6Aq0ehOQc/hf_20260809_113747_e3163e91-2104-42c4-9bb8-2235df32edce.png"
             alt=""
             fill
             priority
@@ -221,7 +221,7 @@ export default async function HomePage() {
               >
                 <div className="relative lg:w-[460px] shrink-0 min-h-[260px] lg:min-h-[320px]">
                   <Image
-                    src={`https://picsum.photos/seed/${CAMPAIGN_SEEDS[0]}/920/640`}
+                    src="https://d8j0ntlcm91z4.cloudfront.net/user_3GSqHKoPVu8jjSvOXL6Aq0ehOQc/hf_20260809_113747_db592cac-e2ea-4120-b752-a7028ede6cba.png"
                     alt={featured.name}
                     fill
                     className="object-cover"
@@ -412,7 +412,7 @@ export default async function HomePage() {
             <RevealUp delay={0.05} className="relative hidden lg:block">
               <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
                 <Image
-                  src="https://picsum.photos/seed/creator-filming-phone-setup/960/1200"
+                  src="https://d8j0ntlcm91z4.cloudfront.net/user_3GSqHKoPVu8jjSvOXL6Aq0ehOQc/hf_20260809_113747_b972f910-d41f-41e5-af1e-2c73a29187cb.png"
                   alt="Creator filming content"
                   fill
                   className="object-cover"
@@ -505,7 +505,7 @@ export default async function HomePage() {
             {/* Cell: network stat — spans 2 cols on sm */}
             <RevealStagger delay={0.13} className="sm:col-span-2 lg:col-span-1 relative bg-zinc-900 rounded-2xl border border-white/[0.05] overflow-hidden min-h-[180px]">
               <Image
-                src="https://picsum.photos/seed/brand-analytics-dashboard-ksa/800/400"
+                src="https://d8j0ntlcm91z4.cloudfront.net/user_3GSqHKoPVu8jjSvOXL6Aq0ehOQc/hf_20260809_113747_c2dbb2cb-6111-4373-b2f0-cbc3cb060c6f.png"
                 alt=""
                 fill
                 className="object-cover opacity-20"
@@ -539,7 +539,7 @@ export default async function HomePage() {
           <RevealUp>
             <div className="relative rounded-2xl overflow-hidden mb-4">
               <Image
-                src="https://picsum.photos/seed/top-saudi-creator-success-portrait/1400/560"
+                src="https://d8j0ntlcm91z4.cloudfront.net/user_3GSqHKoPVu8jjSvOXL6Aq0ehOQc/hf_20260809_113747_57786853-8f6d-4075-9d00-b4801ba72701.png"
                 alt=""
                 fill
                 className="object-cover object-center"
