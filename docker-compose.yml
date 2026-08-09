@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  postgres:
+    image: public.ecr.aws/supabase/postgres:17.6.1.075
+    container_name: content_rewards_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: content_rewards
+      POSTGRES_PASSWORD: content_rewards_dev
+      POSTGRES_DB: content_rewards
+    ports:
+      - '5433:5432'
+    volumes:
+      - content_rewards_postgres_data:/var/lib/postgresql/data
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+
+volumes:
+  content_rewards_postgres_data:

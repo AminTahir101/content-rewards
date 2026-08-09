@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "home": "Home",
+    "discover": "Discover",
+    "myCampaigns": "My Campaigns",
+    "earnings": "Earnings",
+    "profile": "Profile",
+    "overview": "Overview",
+    "campaigns": "Campaigns",
+    "submissions": "Submissions",
+    "creators": "Creators",
+    "analytics": "Analytics",
+    "finance": "Finance",
+    "team": "Team",
+    "settings": "Settings"
+  },
+  "auth": {
+    "login": "Log In",
+    "register": "Sign Up",
+    "logout": "Log Out",
+    "email": "Email",
+    "password": "Password",
+    "name": "Full Name",
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Log in to your Content Rewards account",
+    "registerTitle": "Join Content Rewards",
+    "registerSubtitle": "Create your account to get started",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signUpLink": "Sign up",
+    "signInLink": "Log in",
+    "roleCreator": "Creator",
+    "roleBrand": "Brand",
+    "roleAgency": "Agency",
+    "selectRole": "I am a..."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "back": "Back",
+    "currency": "SAR"
+  },
+  "home": {
+    "creatorWelcome": "Welcome back, {name}",
+    "totalEarnings": "Total Earnings",
+    "availableBalance": "Available Balance",
+    "pendingEarnings": "Pending Earnings",
+    "recommendedCampaigns": "Recommended Campaigns",
+    "activeCampaigns": "Active Campaigns",
+    "discoverCampaigns": "Discover Campaigns"
+  },
+  "brand": {
+    "overview": "Overview",
+    "totalSpend": "Total Spend",
+    "verifiedViews": "Verified Views",
+    "activeCampaigns": "Active Campaigns",
+    "pendingReviews": "Pending Reviews"
+  }
+}

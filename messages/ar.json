@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "discover": "اكتشف",
+    "myCampaigns": "حملاتي",
+    "earnings": "أرباحي",
+    "profile": "الملف الشخصي",
+    "overview": "نظرة عامة",
+    "campaigns": "الحملات",
+    "submissions": "المقدمات",
+    "creators": "المنشئون",
+    "analytics": "التحليلات",
+    "finance": "المالية",
+    "team": "الفريق",
+    "settings": "الإعدادات"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "name": "الاسم الكامل",
+    "loginTitle": "مرحباً بعودتك",
+    "loginSubtitle": "سجّل دخولك إلى Content Rewards",
+    "registerTitle": "انضم إلى Content Rewards",
+    "registerSubtitle": "أنشئ حسابك وابدأ الآن",
+    "noAccount": "ليس لديك حساب؟",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "signUpLink": "إنشاء حساب",
+    "signInLink": "تسجيل الدخول",
+    "roleCreator": "منشئ محتوى",
+    "roleBrand": "علامة تجارية",
+    "roleAgency": "وكالة",
+    "selectRole": "أنا..."
+  },
+  "common": {
+    "loading": "جارٍ التحميل...",
+    "error": "حدث خطأ ما",
+    "retry": "حاول مجدداً",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "continue": "متابعة",
+    "back": "رجوع",
+    "currency": "ر.س"
+  },
+  "home": {
+    "creatorWelcome": "مرحباً بعودتك، {name}",
+    "totalEarnings": "إجمالي الأرباح",
+    "availableBalance": "الرصيد المتاح",
+    "pendingEarnings": "الأرباح المعلقة",
+    "recommendedCampaigns": "حملات مقترحة",
+    "activeCampaigns": "حملاتي النشطة",
+    "discoverCampaigns": "اكتشف الحملات"
+  },
+  "brand": {
+    "overview": "نظرة عامة",
+    "totalSpend": "إجمالي الإنفاق",
+    "verifiedViews": "المشاهدات الموثقة",
+    "activeCampaigns": "الحملات النشطة",
+    "pendingReviews": "المراجعات المعلقة"
+  }
+}
