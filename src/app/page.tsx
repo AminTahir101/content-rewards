@@ -8,7 +8,7 @@ import {
   Shield,
   CurrencyDollar,
   ChartLineUp,
-  Star,
+  Play,
 } from '@phosphor-icons/react/dist/ssr'
 import { prisma } from '@/lib/prisma'
 import MarketingNav from '@/components/marketing/MarketingNav'
@@ -22,7 +22,7 @@ async function getHotCampaigns() {
   const campaigns = await prisma.campaign.findMany({
     where: { status: 'ACTIVE' },
     orderBy: { cpm: 'desc' },
-    take: 4,
+    take: 5,
     select: {
       id: true,
       name: true,
@@ -70,123 +70,94 @@ const CAMPAIGN_SEEDS = [
 
 export default async function HomePage() {
   const campaigns = await getHotCampaigns()
+  const featured = campaigns[0]
+  const rest = campaigns.slice(1)
 
   return (
-    <div className="min-h-[100dvh] bg-zinc-50 text-zinc-900">
+    <div className="min-h-[100dvh] bg-white text-zinc-900">
       <MarketingNav />
 
       {/* ─────────────────────────────────────────────────────────────
-          HERO — left-aligned split, visual right
-          Layout family: 2-column split, large display type left
+          HERO
+          Layout family: edge-bleeding full-height photo (absolute right),
+          copy hard-left — no grid column, no floating cards
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative min-h-[100dvh] flex items-center bg-white border-b border-zinc-200">
-        <div className="max-w-[1400px] mx-auto px-6 w-full py-24 grid grid-cols-1 lg:grid-cols-[1fr_520px] gap-12 lg:gap-20 items-center">
+      <section className="relative min-h-[100dvh] bg-white flex items-center overflow-hidden">
 
-          {/* Copy */}
-          <div>
+        {/* Edge-bleeding photo — absolute, right half */}
+        <div className="absolute top-0 right-0 bottom-0 w-[52%] hidden lg:block pointer-events-none">
+          <Image
+            src="https://picsum.photos/seed/saudi-creator-studio-portrait/900/1100"
+            alt=""
+            fill
+            priority
+            className="object-cover object-top"
+          />
+          {/* Left fade to white */}
+          <div className="absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-white to-transparent z-10" />
+          {/* Bottom fade to white */}
+          <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-white to-transparent z-10" />
+        </div>
+
+        {/* Copy — left column only, never overlapping image */}
+        <div className="relative z-10 max-w-[1400px] mx-auto px-6 w-full py-32 lg:py-0">
+          <div className="max-w-[560px]">
             <RevealUp>
-              <p className="text-[13px] font-semibold text-green-600 uppercase tracking-widest mb-6">
-                Saudi Arabia's creator performance platform
-              </p>
-            </RevealUp>
-
-            <RevealUp delay={0.05}>
-              <h1 className="text-[52px] sm:text-[68px] lg:text-[76px] font-black tracking-[-0.03em] leading-[1.02] text-zinc-900">
-                Your content<br />
-                <span className="text-green-600">earns money.</span><br />
-                Every view.
+              <h1 className="text-[64px] sm:text-[80px] lg:text-[90px] font-black tracking-[-0.04em] leading-[0.93] text-zinc-950 mb-8">
+                Earn from<br />
+                <em className="not-italic text-green-600">every view.</em>
               </h1>
             </RevealUp>
 
-            <RevealUp delay={0.09}>
-              <p className="mt-7 text-[18px] text-zinc-500 leading-relaxed max-w-[480px]">
-                Partner with top brands, publish on TikTok, Instagram, YouTube or X,
-                and collect a verified payout for every view you generate.
+            <RevealUp delay={0.06}>
+              <p className="text-[18px] text-zinc-500 leading-relaxed mb-10 max-w-[440px]">
+                Join 50,000 Saudi creators getting paid by top brands — per verified view, automatically.
               </p>
             </RevealUp>
 
-            <RevealUp delay={0.13}>
-              <div className="mt-10 flex flex-col sm:flex-row gap-3">
+            <RevealUp delay={0.1}>
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Link
                   href="/register"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white font-bold px-8 py-4 text-[16px] transition-all"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white font-black px-8 py-4 text-[16px] transition-all"
                 >
                   Start Earning Free
                   <ArrowRight size={18} weight="bold" />
                 </Link>
                 <Link
                   href="/discover"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold px-8 py-4 text-[16px] transition-all"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-zinc-700 font-semibold px-8 py-4 text-[16px] transition-all"
                 >
                   Browse Campaigns
                 </Link>
               </div>
             </RevealUp>
 
-            <RevealUp delay={0.17}>
-              <div className="mt-12 flex items-center gap-6">
-                <div className="flex -space-x-2">
-                  {['creator-a', 'creator-b', 'creator-c', 'creator-d'].map((seed) => (
-                    <Image
-                      key={seed}
-                      src={`https://picsum.photos/seed/${seed}/40/40`}
-                      alt="Creator"
-                      width={36}
-                      height={36}
-                      className="rounded-full border-2 border-white object-cover"
-                    />
-                  ))}
-                </div>
-                <div>
-                  <div className="flex items-center gap-1 mb-0.5">
-                    {[0,1,2,3,4].map((i) => (
-                      <Star key={i} size={13} weight="fill" className="text-amber-400" />
-                    ))}
-                  </div>
-                  <p className="text-sm text-zinc-500">Trusted by <strong className="text-zinc-900">50,000+</strong> Saudi creators</p>
-                </div>
+            {/* Live indicator */}
+            <RevealUp delay={0.14}>
+              <div className="mt-12 inline-flex items-center gap-3 px-4 py-2.5 rounded-full border border-zinc-200 bg-zinc-50">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-[13px] font-semibold text-zinc-600">
+                  {campaigns.length > 0 ? campaigns.length : '40'}+ campaigns paying right now
+                </span>
               </div>
             </RevealUp>
           </div>
+        </div>
 
-          {/* Visual */}
-          <RevealUp delay={0.06} className="hidden lg:block">
-            <div className="relative">
-              <Image
-                src="https://picsum.photos/seed/saudi-creator-studio/520/600"
-                alt="Creator recording content"
-                width={520}
-                height={600}
-                priority
-                className="rounded-3xl object-cover w-full h-[580px]"
-              />
-              {/* Earnings card */}
-              <div className="absolute -bottom-6 -left-8 bg-white border border-zinc-200 rounded-2xl px-6 py-5 shadow-lg shadow-zinc-200/80">
-                <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wide mb-1.5">This month</p>
-                <p className="text-[28px] font-black text-zinc-900 tracking-tight">SAR 14,320</p>
-                <div className="flex items-center gap-1.5 mt-1">
-                  <TrendUp size={14} weight="bold" className="text-green-600" />
-                  <p className="text-sm font-semibold text-green-600">+34% vs last month</p>
-                </div>
-              </div>
-              {/* CPM badge */}
-              <div className="absolute top-6 -right-5 bg-white border border-zinc-200 rounded-xl px-4 py-3.5 shadow-md shadow-zinc-200/60">
-                <p className="text-[11px] text-zinc-400 font-semibold uppercase tracking-wide mb-1">Top CPM</p>
-                <p className="text-xl font-black text-zinc-900">SAR 22</p>
-                <p className="text-[11px] text-zinc-500 mt-0.5">stc Gaming campaign</p>
-              </div>
-            </div>
-          </RevealUp>
+        {/* Scroll hint */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 hidden lg:block">
+          <div className="w-[1px] h-12 bg-gradient-to-b from-zinc-300 to-transparent mx-auto" />
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          BRAND MARQUEE — horizontal logo scroll
-          Layout family: infinite marquee strip
+          BRAND STRIP — dark inverted marquee
+          Layout family: dark band / infinite scroll strip
       ───────────────────────────────────────────────────────────── */}
-      <section className="border-b border-zinc-200 bg-zinc-50 py-5">
+      <section className="bg-zinc-950 py-5">
         <div className="mb-4 px-6">
-          <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest text-center">
+          <p className="text-[10px] font-bold text-white/25 uppercase tracking-[0.2em] text-center">
             Brands running campaigns now
           </p>
         </div>
@@ -194,22 +165,24 @@ export default async function HomePage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          STATS — 4-col with top border rule, large display numbers
-          Layout family: ruled stat grid
+          STATS — large numbers separated by hairline rules, no box
+          Layout family: open stat row with vertical dividers
       ───────────────────────────────────────────────────────────── */}
-      <section className="py-28 bg-white border-b border-zinc-200">
+      <section className="py-24 bg-white">
         <div className="max-w-[1400px] mx-auto px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 divide-x divide-zinc-200 border border-zinc-200 rounded-3xl overflow-hidden">
+          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-zinc-100">
             {[
-              { value: 'SAR 12M+', label: 'Paid to creators', sub: 'and counting' },
-              { value: '800M+',    label: 'Verified views',   sub: 'fraud-screened' },
-              { value: '50,000+', label: 'Active creators',   sub: 'across KSA' },
-              { value: '40+',     label: 'Live campaigns',    sub: 'right now' },
-            ].map(({ value, label, sub }) => (
-              <RevealStagger key={label} className="px-8 py-10">
-                <p className="text-[36px] sm:text-[44px] font-black text-zinc-900 tracking-tight leading-none">{value}</p>
-                <p className="text-[15px] font-semibold text-zinc-700 mt-3">{label}</p>
-                <p className="text-sm text-zinc-400 mt-0.5">{sub}</p>
+              { value: 'SAR 12M+', label: 'Paid to creators',  detail: 'and counting' },
+              { value: '800M+',    label: 'Verified views',    detail: 'fraud-screened' },
+              { value: '50,000+', label: 'Active creators',    detail: 'across KSA' },
+              { value: '40+',     label: 'Live campaigns',     detail: 'right now' },
+            ].map(({ value, label, detail }, i) => (
+              <RevealStagger key={label} delay={i * 0.07} className="px-8 first:pl-0 last:pr-0 py-6">
+                <p className="text-[40px] sm:text-[48px] font-black text-zinc-950 tracking-[-0.03em] leading-none">
+                  {value}
+                </p>
+                <p className="text-[14px] font-semibold text-zinc-700 mt-3">{label}</p>
+                <p className="text-[13px] text-zinc-400 mt-0.5">{detail}</p>
               </RevealStagger>
             ))}
           </div>
@@ -217,252 +190,387 @@ export default async function HomePage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          CAMPAIGNS — alternating large feature rows (max 2 zig-zag)
-          then a 2-col grid for remaining — layout diversity enforced
-          Layout family: alternating image+copy rows + mini card grid
+          CAMPAIGNS — 1 large featured card + compact list rows
+          Layout family: featured hero card + divider-separated list
       ───────────────────────────────────────────────────────────── */}
-      <section className="py-28 border-b border-zinc-200 bg-zinc-50">
+      <section className="py-24 bg-zinc-50 border-y border-zinc-100">
         <div className="max-w-[1400px] mx-auto px-6">
-          <div className="flex items-end justify-between mb-14">
+
+          <div className="flex items-end justify-between mb-10">
             <RevealUp>
-              <h2 className="text-[36px] sm:text-[48px] font-black tracking-[-0.025em] leading-tight">
+              <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight">
                 Live campaigns
               </h2>
             </RevealUp>
             <RevealUp delay={0.04}>
-              <Link href="/discover" className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-green-600 hover:text-green-700 transition-colors">
-                See all <ArrowRight size={15} weight="bold" />
+              <Link
+                href="/discover"
+                className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-green-600 hover:text-green-700 transition-colors"
+              >
+                View all <ArrowRight size={15} weight="bold" />
               </Link>
             </RevealUp>
           </div>
 
-          {/* 2 featured zig-zag rows */}
-          <div className="space-y-6 mb-6">
-            {campaigns.slice(0, 2).map((c, i) => {
-              const remaining = parseFloat(c.totalBudget) - parseFloat(c.reservedBudget)
-              const isEven = i % 2 === 0
-
-              return (
-                <RevealUp key={c.id} delay={i * 0.05}>
-                  <Link
-                    href={`/campaigns/${c.slug}`}
-                    className={`group flex flex-col md:flex-row items-stretch gap-0 rounded-3xl border border-zinc-200 overflow-hidden bg-white hover:border-green-300 hover:shadow-md hover:shadow-green-100 transition-all ${isEven ? '' : 'md:flex-row-reverse'}`}
-                  >
-                    <div className="relative md:w-[340px] shrink-0 min-h-[220px]">
-                      <Image
-                        src={`https://picsum.photos/seed/${CAMPAIGN_SEEDS[i]}/680/440`}
-                        alt={c.name}
-                        fill
-                        className="object-cover"
-                      />
+          {/* Featured large card */}
+          {featured && (
+            <RevealUp className="mb-4">
+              <Link
+                href={`/campaigns/${featured.slug}`}
+                className="group relative flex flex-col lg:flex-row rounded-2xl overflow-hidden border border-zinc-200 bg-white hover:border-green-300 hover:shadow-lg hover:shadow-green-50 transition-all"
+              >
+                <div className="relative lg:w-[460px] shrink-0 min-h-[260px] lg:min-h-[320px]">
+                  <Image
+                    src={`https://picsum.photos/seed/${CAMPAIGN_SEEDS[0]}/920/640`}
+                    alt={featured.name}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-zinc-950/70 lg:from-transparent to-transparent" />
+                </div>
+                <div className="flex-1 p-8 lg:p-10 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">
+                        {featured.organization.name}
+                      </span>
+                      <span className="w-1 h-1 rounded-full bg-zinc-300" />
+                      <span className="text-[11px] font-bold text-green-600 uppercase tracking-widest">
+                        {CATEGORY_LABEL[featured.category] ?? featured.category}
+                      </span>
                     </div>
-                    <div className="flex-1 p-8 flex flex-col justify-between">
-                      <div>
-                        <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">{c.organization.name}</p>
-                        <h3 className="text-[22px] font-black tracking-tight text-zinc-900 group-hover:text-green-700 transition-colors mb-3 leading-tight">
-                          {c.name}
-                        </h3>
-                        <div className="flex flex-wrap gap-1.5 mb-4">
-                          {c.platforms.map(({ platform }) => (
-                            <span key={platform} className="text-[12px] font-semibold bg-zinc-100 text-zinc-600 px-2.5 py-1 rounded-lg">
-                              {PLATFORM_LABEL[platform]}
-                            </span>
-                          ))}
-                          <span className="text-[12px] font-semibold bg-green-50 text-green-700 px-2.5 py-1 rounded-lg">
-                            {CATEGORY_LABEL[c.category] ?? c.category}
-                          </span>
-                        </div>
-                        {c.minFollowers > 0 && (
-                          <p className="text-sm text-zinc-400">
-                            {c.minFollowers.toLocaleString()}+ followers required
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex items-end justify-between mt-6 pt-6 border-t border-zinc-100">
-                        <div>
-                          {c.cpm && (
-                            <p className="text-[32px] font-black text-green-600 tracking-tight leading-none">
-                              SAR {c.cpm}<span className="text-base font-semibold text-zinc-400 ml-1.5">CPM</span>
-                            </p>
-                          )}
-                          {c.maxCreatorPayout && (
-                            <p className="text-sm text-zinc-400 mt-1">
-                              Up to SAR {parseFloat(c.maxCreatorPayout).toLocaleString('en-SA')}
-                            </p>
-                          )}
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs text-zinc-400 mb-1">Budget remaining</p>
-                          <p className="text-sm font-bold text-zinc-700">
-                            SAR {remaining.toLocaleString('en-SA', { maximumFractionDigits: 0 })}
-                          </p>
-                        </div>
-                      </div>
+                    <h3 className="text-[28px] lg:text-[32px] font-black tracking-tight text-zinc-900 group-hover:text-green-700 transition-colors leading-tight mb-4">
+                      {featured.name}
+                    </h3>
+                    <div className="flex flex-wrap gap-1.5">
+                      {featured.platforms.map(({ platform }) => (
+                        <span
+                          key={platform}
+                          className="text-[12px] font-semibold bg-zinc-100 text-zinc-600 px-3 py-1 rounded-lg"
+                        >
+                          {PLATFORM_LABEL[platform]}
+                        </span>
+                      ))}
                     </div>
-                  </Link>
-                </RevealUp>
-              )
-            })}
-          </div>
-
-          {/* Remaining 2 campaigns as compact 2-col grid — breaks the zig-zag pattern */}
-          {campaigns.slice(2).length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {campaigns.slice(2).map((c, i) => (
-                <RevealStagger key={c.id} delay={i * 0.05}>
-                  <Link
-                    href={`/campaigns/${c.slug}`}
-                    className="group flex flex-col gap-4 rounded-2xl border border-zinc-200 bg-white hover:border-green-300 hover:shadow-md hover:shadow-green-100 p-6 transition-all"
-                  >
+                  </div>
+                  <div className="flex items-end gap-8 mt-8 pt-8 border-t border-zinc-100">
                     <div>
-                      <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-1.5">{c.organization.name}</p>
-                      <h3 className="text-[17px] font-black text-zinc-900 group-hover:text-green-700 transition-colors leading-tight">{c.name}</h3>
+                      {featured.cpm && (
+                        <>
+                          <p className="text-[42px] font-black text-green-600 tracking-tight leading-none">
+                            SAR {featured.cpm}
+                          </p>
+                          <p className="text-[13px] font-semibold text-zinc-400 mt-1">per 1,000 verified views</p>
+                        </>
+                      )}
                     </div>
-                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-zinc-100">
-                      <div className="flex gap-1.5">
-                        {c.platforms.map(({ platform }) => (
+                    {featured.maxCreatorPayout && (
+                      <div>
+                        <p className="text-[13px] font-semibold text-zinc-400">Max payout</p>
+                        <p className="text-[18px] font-black text-zinc-800">
+                          SAR {parseFloat(featured.maxCreatorPayout).toLocaleString('en-SA')}
+                        </p>
+                      </div>
+                    )}
+                    <div className="ml-auto">
+                      <span className="inline-flex items-center gap-2 bg-green-600 group-hover:bg-green-700 text-white font-bold px-5 py-3 rounded-xl text-[14px] transition-colors">
+                        Join campaign <ArrowRight size={15} weight="bold" />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </RevealUp>
+          )}
+
+          {/* Compact list rows for remaining campaigns */}
+          {rest.length > 0 && (
+            <div className="bg-white rounded-2xl border border-zinc-200 divide-y divide-zinc-100 overflow-hidden">
+              {rest.map((c, i) => {
+                const remaining = parseFloat(c.totalBudget) - parseFloat(c.reservedBudget)
+                return (
+                  <RevealUp key={c.id} delay={i * 0.04}>
+                    <Link
+                      href={`/campaigns/${c.slug}`}
+                      className="group flex items-center gap-4 sm:gap-6 px-6 py-5 hover:bg-zinc-50 transition-colors"
+                    >
+                      <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0">
+                        <Image
+                          src={`https://picsum.photos/seed/${CAMPAIGN_SEEDS[i + 1] ?? `campaign-${i}`}/96/96`}
+                          alt=""
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <p className="text-[13px] font-semibold text-zinc-400 truncate">{c.organization.name}</p>
+                        </div>
+                        <p className="text-[15px] font-black text-zinc-900 group-hover:text-green-700 transition-colors truncate">
+                          {c.name}
+                        </p>
+                      </div>
+                      <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+                        {c.platforms.slice(0, 2).map(({ platform }) => (
                           <span key={platform} className="text-[11px] font-semibold bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded">
                             {PLATFORM_LABEL[platform]}
                           </span>
                         ))}
                       </div>
+                      <div className="hidden lg:block shrink-0 text-right">
+                        <p className="text-[11px] font-semibold text-zinc-400">Budget left</p>
+                        <p className="text-[13px] font-bold text-zinc-700">
+                          SAR {remaining.toLocaleString('en-SA', { maximumFractionDigits: 0 })}
+                        </p>
+                      </div>
                       {c.cpm && (
-                        <span className="text-lg font-black text-green-600">SAR {c.cpm} <span className="text-xs font-semibold text-zinc-400">CPM</span></span>
+                        <div className="shrink-0 text-right">
+                          <p className="text-[20px] font-black text-green-600 leading-none">
+                            SAR {c.cpm}
+                          </p>
+                          <p className="text-[10px] font-semibold text-zinc-400 mt-0.5">CPM</p>
+                        </div>
                       )}
-                    </div>
-                  </Link>
-                </RevealStagger>
-              ))}
+                      <ArrowRight size={16} weight="bold" className="shrink-0 text-zinc-300 group-hover:text-green-600 transition-colors" />
+                    </Link>
+                  </RevealUp>
+                )
+              })}
             </div>
           )}
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          HOW IT WORKS — numbered vertical steps, large step numerals
-          Layout family: vertical timeline with large counters
+          HOW IT WORKS — numbered steps left / single image right
+          Layout family: stacked numbered list + anchoring image (2-col)
+          Different from 3-col with background numerals
       ───────────────────────────────────────────────────────────── */}
-      <section id="how-it-works" className="py-28 bg-white border-b border-zinc-200">
+      <section id="how-it-works" className="py-24 bg-white border-b border-zinc-100">
         <div className="max-w-[1400px] mx-auto px-6">
-          <RevealUp className="mb-16">
-            <h2 className="text-[36px] sm:text-[48px] font-black tracking-[-0.025em] leading-tight max-w-sm">
-              From post to payout in three steps.
-            </h2>
-          </RevealUp>
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_480px] gap-16 items-center">
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
-            {[
-              {
-                n: '01',
-                title: 'Join a campaign',
-                body: 'Browse live brand campaigns filtered by your niche, platform, and CPM rate. No pitch needed. One tap joins.',
-                icon: <UsersThree size={28} weight="duotone" className="text-green-600" />,
-                seed: 'campaign-join-mobile',
-              },
-              {
-                n: '02',
-                title: 'Create and submit',
-                body: 'Follow the creative brief, publish on your social account, then paste your URL into Content Rewards. Done in under a minute.',
-                icon: <ChartLineUp size={28} weight="duotone" className="text-green-600" />,
-                seed: 'content-creator-filming',
-              },
-              {
-                n: '03',
-                title: 'Collect your earnings',
-                body: 'Views are independently verified. Your reward is calculated and deposited to your wallet. Withdraw to your Saudi bank account.',
-                icon: <CurrencyDollar size={28} weight="duotone" className="text-green-600" />,
-                seed: 'bank-payment-success',
-              },
-            ].map(({ n, title, body, icon, seed }, i) => (
-              <RevealUp key={n} delay={i * 0.08}>
-                <div className="relative">
-                  {/* Large step number */}
-                  <p className="text-[96px] font-black text-zinc-100 leading-none tracking-tighter select-none mb-4 -ml-2">
-                    {n}
-                  </p>
-                  <div className="relative z-10 -mt-10">
-                    <div className="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center mb-5">
-                      {icon}
+            {/* Steps */}
+            <div>
+              <RevealUp className="mb-12">
+                <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight">
+                  From zero to payout<br />in three steps.
+                </h2>
+              </RevealUp>
+
+              <div className="space-y-0 divide-y divide-zinc-100">
+                {[
+                  {
+                    n: '01',
+                    icon: <UsersThree size={20} weight="fill" className="text-green-600" />,
+                    title: 'Join a campaign',
+                    body: 'Browse active brand campaigns, filter by niche and platform, and join with one tap. No pitch needed.',
+                  },
+                  {
+                    n: '02',
+                    icon: <Play size={20} weight="fill" className="text-green-600" />,
+                    title: 'Create and submit',
+                    body: 'Follow the creative brief, publish on your social account, then paste the post URL. Done in under a minute.',
+                  },
+                  {
+                    n: '03',
+                    icon: <CurrencyDollar size={20} weight="fill" className="text-green-600" />,
+                    title: 'Collect your earnings',
+                    body: 'Views are independently verified and your reward lands in your wallet automatically. Withdraw any time.',
+                  },
+                ].map(({ n, icon, title, body }, i) => (
+                  <RevealUp key={n} delay={i * 0.08}>
+                    <div className="flex gap-6 py-8">
+                      <div className="shrink-0 mt-0.5">
+                        <p className="text-[11px] font-black text-zinc-300 tracking-widest mb-3">{n}</p>
+                        <div className="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center">
+                          {icon}
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-[18px] font-black tracking-tight text-zinc-900 mb-2">{title}</h3>
+                        <p className="text-[15px] text-zinc-500 leading-relaxed max-w-[380px]">{body}</p>
+                      </div>
                     </div>
-                    <h3 className="text-[20px] font-black tracking-tight mb-3">{title}</h3>
-                    <p className="text-[15px] text-zinc-500 leading-relaxed max-w-[280px]">{body}</p>
-                  </div>
-                  <div className="mt-6 rounded-2xl overflow-hidden">
-                    <Image
-                      src={`https://picsum.photos/seed/${seed}/600/280`}
-                      alt={title}
-                      width={600}
-                      height={280}
-                      className="w-full object-cover h-[180px] rounded-2xl"
-                    />
-                  </div>
+                  </RevealUp>
+                ))}
+              </div>
+
+              <RevealUp delay={0.3}>
+                <div className="mt-10 pt-10 border-t border-zinc-100">
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white font-black px-7 py-3.5 text-[15px] transition-all"
+                  >
+                    Get started free <ArrowRight size={16} weight="bold" />
+                  </Link>
                 </div>
               </RevealUp>
-            ))}
+            </div>
+
+            {/* Anchoring image */}
+            <RevealUp delay={0.05} className="relative hidden lg:block">
+              <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
+                <Image
+                  src="https://picsum.photos/seed/creator-filming-phone-setup/960/1200"
+                  alt="Creator filming content"
+                  fill
+                  className="object-cover"
+                />
+                {/* Earnings badge overlay */}
+                <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-sm rounded-xl px-5 py-4 border border-zinc-200/80">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Latest payout</p>
+                      <p className="text-[26px] font-black text-zinc-900 tracking-tight">SAR 3,840</p>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-green-600">
+                      <TrendUp size={16} weight="bold" />
+                      <span className="text-[13px] font-black">+41%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </RevealUp>
           </div>
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          TESTIMONIALS — asymmetric masonry 2fr + 1fr columns
-          Layout family: masonry/asymmetric quote grid
+          FOR BRANDS — dark bento grid
+          Layout family: dark inversion with unequal bento cells
+          Only dark section on the page
       ───────────────────────────────────────────────────────────── */}
-      <section className="py-28 bg-zinc-50 border-b border-zinc-200">
+      <section id="for-brands" className="py-24 bg-zinc-950">
         <div className="max-w-[1400px] mx-auto px-6">
-          <RevealUp className="mb-14">
-            <h2 className="text-[36px] sm:text-[48px] font-black tracking-[-0.025em] leading-tight max-w-sm">
+
+          <RevealUp className="mb-10">
+            <p className="text-[11px] font-black text-green-500 uppercase tracking-[0.18em] mb-4">
+              For brands and agencies
+            </p>
+            <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight text-white max-w-xl">
+              Pay for verified views.<br />Not for promises.
+            </h2>
+          </RevealUp>
+
+          {/* Bento grid — 3 cols, 2 rows, mixed cell sizes */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
+
+            {/* Large hero cell — spans 2 rows on lg */}
+            <RevealUp className="sm:row-span-2 bg-zinc-900 rounded-2xl p-8 flex flex-col justify-between min-h-[280px] sm:min-h-0 border border-white/[0.05]">
+              <div>
+                <p className="text-[48px] sm:text-[56px] font-black text-white tracking-tight leading-none mb-3">
+                  4.8<span className="text-green-500">×</span>
+                </p>
+                <p className="text-[15px] font-semibold text-zinc-400 leading-snug max-w-[200px]">
+                  Average ROI vs. display advertising
+                </p>
+              </div>
+              <div className="mt-8">
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white text-zinc-900 font-black px-6 py-3 text-[14px] hover:bg-zinc-100 active:scale-[0.98] transition-all"
+                >
+                  Launch a campaign <ArrowRight size={15} weight="bold" />
+                </Link>
+              </div>
+            </RevealUp>
+
+            {/* Cell: fraud protection */}
+            <RevealStagger delay={0.05} className="bg-zinc-900 rounded-2xl p-7 border border-white/[0.05] flex flex-col gap-4">
+              <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
+                <Shield size={20} weight="fill" className="text-green-500" />
+              </div>
+              <div>
+                <p className="text-[17px] font-black text-white mb-1.5">Fraud detection built in</p>
+                <p className="text-[13px] text-zinc-500 leading-relaxed">
+                  Every submission is screened for fake views, bot traffic, and inflated metrics before your budget moves.
+                </p>
+              </div>
+            </RevealStagger>
+
+            {/* Cell: verified views */}
+            <RevealStagger delay={0.09} className="bg-zinc-900 rounded-2xl p-7 border border-white/[0.05] flex flex-col gap-4">
+              <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
+                <ChartLineUp size={20} weight="fill" className="text-green-500" />
+              </div>
+              <div>
+                <p className="text-[17px] font-black text-white mb-1.5">Real-time campaign dashboard</p>
+                <p className="text-[13px] text-zinc-500 leading-relaxed">
+                  Track verified views, creator performance, spend rate, and remaining budget live, per campaign.
+                </p>
+              </div>
+            </RevealStagger>
+
+            {/* Cell: network stat — spans 2 cols on sm */}
+            <RevealStagger delay={0.13} className="sm:col-span-2 lg:col-span-1 relative bg-zinc-900 rounded-2xl border border-white/[0.05] overflow-hidden min-h-[180px]">
+              <Image
+                src="https://picsum.photos/seed/brand-analytics-dashboard-ksa/800/400"
+                alt=""
+                fill
+                className="object-cover opacity-20"
+              />
+              <div className="relative z-10 p-7 flex flex-col justify-end h-full">
+                <p className="text-[36px] font-black text-white tracking-tight leading-none">50,000+</p>
+                <p className="text-[13px] font-semibold text-zinc-400 mt-1.5">
+                  verified creators across KSA, UAE and Kuwait
+                </p>
+              </div>
+            </RevealStagger>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          TESTIMONIALS — large pull-quote + compact creator grid
+          Layout family: single dominant quote + supporting name list
+          Different from asymmetric masonry
+      ───────────────────────────────────────────────────────────── */}
+      <section className="py-24 bg-zinc-50 border-b border-zinc-100">
+        <div className="max-w-[1400px] mx-auto px-6">
+
+          <RevealUp className="mb-10">
+            <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight">
               Creators who are winning.
             </h2>
           </RevealUp>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr] gap-4">
-            {/* Featured large */}
-            <RevealUp className="relative rounded-3xl overflow-hidden min-h-[440px] row-span-2">
+          {/* Large pull quote */}
+          <RevealUp>
+            <div className="relative rounded-2xl overflow-hidden mb-4">
               <Image
-                src="https://picsum.photos/seed/top-saudi-creator-success/700/600"
-                alt="Featured creator"
+                src="https://picsum.photos/seed/top-saudi-creator-success-portrait/1400/560"
+                alt=""
                 fill
-                className="object-cover"
+                className="object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/90 via-zinc-900/30 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-8">
-                <p className="text-[17px] font-semibold text-white leading-snug mb-5 max-w-[360px]">
-                  "I made more from one campaign than I used to earn in a full month. The process is so simple."
+              <div className="absolute inset-0 bg-zinc-950/70" />
+              <div className="relative z-10 p-10 sm:p-14 max-w-[780px]">
+                <p className="text-[22px] sm:text-[28px] font-semibold text-white leading-snug mb-6">
+                  "I made more from one campaign than I used to earn in a full month. The process is completely transparent."
                 </p>
-                <p className="text-sm font-bold text-white">Sarah A.</p>
-                <p className="text-xs text-white/60">@saraha_ksa, TikTok</p>
-                <p className="text-2xl font-black text-green-400 mt-2">SAR 18,400</p>
+                <p className="text-[15px] font-black text-white">Sarah A.</p>
+                <p className="text-[13px] text-white/50 mt-0.5">@saraha_ksa, TikTok</p>
+                <p className="text-[28px] font-black text-green-400 mt-3">SAR 18,400 earned</p>
               </div>
-            </RevealUp>
+            </div>
+          </RevealUp>
 
-            {/* Top right */}
+          {/* Compact creator grid — 4 col, no images, just name + earnings */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {[
-              {
-                quote: "The stc Gaming campaign was perfect. CPM tracking is completely transparent.",
-                name: 'Mohammed K.', handle: '@mkgaming, YouTube', amount: 'SAR 32,000', seed: 'gamer-creator',
-              },
-              {
-                quote: "Joined three campaigns at once. The dashboard makes everything easy to follow.",
-                name: 'Khalid M.', handle: '@khalidm_sa, TikTok', amount: 'SAR 24,500', seed: 'male-creator-sa',
-              },
-              {
-                quote: "Brand partnerships I could never get on my own. Payments are always on time.",
-                name: 'Lana R.', handle: '@lanarlife, Instagram', amount: 'SAR 9,700', seed: 'female-lifestyle-creator',
-              },
-              {
-                quote: "Long-form tech reviews pay incredibly well here. My Jarir campaign changed everything.",
-                name: 'Faisal T.', handle: '@faisaltech, YouTube', amount: 'SAR 41,800', seed: 'tech-youtuber',
-              },
-            ].map(({ quote, name, handle, amount, seed }, i) => (
-              <RevealStagger key={name} delay={i * 0.06 + 0.05}>
-                <div className="rounded-2xl bg-white border border-zinc-200 p-6 flex flex-col justify-between min-h-[200px]">
-                  <p className="text-[14px] text-zinc-600 leading-relaxed">"{quote}"</p>
-                  <div className="flex items-end justify-between mt-5 pt-4 border-t border-zinc-100">
-                    <div>
-                      <p className="text-sm font-bold text-zinc-900">{name}</p>
-                      <p className="text-xs text-zinc-400">{handle}</p>
-                    </div>
-                    <span className="text-base font-black text-green-600">{amount}</span>
+              { name: 'Mohammed K.', handle: '@mkgaming, YouTube',      amount: 'SAR 32,000', quote: 'Completely transparent CPM tracking.' },
+              { name: 'Khalid M.',   handle: '@khalidm_sa, TikTok',     amount: 'SAR 24,500', quote: 'Joined three campaigns at once, easy.' },
+              { name: 'Lana R.',     handle: '@lanarlife, Instagram',    amount: 'SAR 9,700',  quote: 'Payments always on time, no chasing.' },
+              { name: 'Faisal T.',   handle: '@faisaltech, YouTube',     amount: 'SAR 41,800', quote: 'Long-form tech reviews pay incredibly well.' },
+            ].map(({ name, handle, amount, quote }, i) => (
+              <RevealStagger key={name} delay={i * 0.06}>
+                <div className="bg-white border border-zinc-200 rounded-xl p-5 flex flex-col justify-between h-full gap-4">
+                  <p className="text-[13px] text-zinc-500 leading-relaxed">"{quote}"</p>
+                  <div>
+                    <p className="text-[20px] font-black text-green-600">{amount}</p>
+                    <p className="text-[13px] font-semibold text-zinc-900 mt-1">{name}</p>
+                    <p className="text-[11px] text-zinc-400">{handle}</p>
                   </div>
                 </div>
               </RevealStagger>
@@ -472,106 +580,60 @@ export default async function HomePage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          FOR BRANDS — full-width tinted section, centered content
-          Layout family: tinted full-width feature band
+          FAQ — 2-col split: header left, accordion right
+          Layout family: header-left / content-right split
+          Different from current centered max-width accordion
       ───────────────────────────────────────────────────────────── */}
-      <section id="for-brands" className="py-28 bg-zinc-900 border-b border-zinc-200">
+      <section id="faq" className="py-24 bg-white border-b border-zinc-100">
         <div className="max-w-[1400px] mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-16">
             <RevealUp>
-              <p className="text-[13px] font-semibold text-green-400 uppercase tracking-widest mb-5">
-                For brands and agencies
-              </p>
-              <h2 className="text-[36px] sm:text-[48px] font-black tracking-[-0.025em] leading-tight text-white mb-6">
-                Pay for views, not promises.
+              <h2 className="text-[36px] sm:text-[40px] font-black tracking-[-0.025em] leading-tight sticky top-28">
+                Common questions.
               </h2>
-              <p className="text-[17px] text-zinc-400 leading-relaxed mb-10 max-w-[480px]">
-                Fund a campaign, define your brief, and reach 50,000 verified Saudi creators.
-                Only pay per verified view. No guesswork, no wasted budget.
-              </p>
-              <div className="space-y-4 mb-10">
-                {[
-                  { icon: <CheckCircle size={20} weight="fill" className="text-green-400 shrink-0" />, text: 'Content reviewed before view counts begin' },
-                  { icon: <Shield size={20} weight="fill" className="text-green-400 shrink-0" />, text: 'Built-in fraud detection on every submission' },
-                  { icon: <ChartLineUp size={20} weight="fill" className="text-green-400 shrink-0" />, text: 'Real-time verified view tracking dashboard' },
-                  { icon: <UsersThree size={20} weight="fill" className="text-green-400 shrink-0" />, text: '50,000+ verified creators across KSA, UAE, Kuwait' },
-                ].map(({ icon, text }) => (
-                  <div key={text} className="flex items-center gap-3 text-[15px] text-zinc-300">
-                    {icon}
-                    <span>{text}</span>
-                  </div>
-                ))}
-              </div>
-              <Link
-                href="/register"
-                className="inline-flex items-center gap-2 rounded-xl bg-white text-zinc-900 font-black px-8 py-4 text-[15px] hover:bg-zinc-100 active:scale-[0.98] transition-all"
-              >
-                Launch a Campaign
-                <ArrowRight size={17} weight="bold" />
-              </Link>
             </RevealUp>
-
-            <RevealUp delay={0.06} className="relative rounded-3xl overflow-hidden min-h-[480px]">
-              <Image
-                src="https://picsum.photos/seed/brand-analytics-screen/700/540"
-                alt="Brand campaign analytics"
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-zinc-900/20" />
-              {/* Floating ROI card */}
-              <div className="absolute top-8 left-8 bg-white rounded-2xl px-5 py-4 shadow-xl">
-                <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wide mb-1">Campaign ROI</p>
-                <p className="text-2xl font-black text-zinc-900">4.8x</p>
-                <p className="text-xs text-green-600 font-semibold mt-0.5">vs. display average</p>
-              </div>
+            <RevealUp delay={0.05}>
+              <FAQAccordion />
             </RevealUp>
           </div>
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          FAQ — two-column question grid
-          Layout family: 2-column question-answer split
+          CTA — stark full-width, zinc-950 dark
+          Layout family: monochromatic dark manifesto, left-aligned
+          Different from the current centered green section
       ───────────────────────────────────────────────────────────── */}
-      <section id="faq" className="py-28 bg-white border-b border-zinc-200">
+      <section className="py-28 bg-zinc-950">
         <div className="max-w-[1400px] mx-auto px-6">
-          <RevealUp className="mb-14">
-            <h2 className="text-[36px] sm:text-[48px] font-black tracking-[-0.025em] leading-tight">
-              Common questions
-            </h2>
-          </RevealUp>
-          <RevealUp delay={0.05}>
-            <FAQAccordion />
-          </RevealUp>
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────
-          CTA — centered manifesto band (manifesto exception applies)
-          Layout family: centered manifesto, full-width green section
-      ───────────────────────────────────────────────────────────── */}
-      <section className="py-32 bg-green-600">
-        <div className="max-w-[900px] mx-auto px-6 text-center">
           <RevealUp>
-            <h2 className="text-[40px] sm:text-[60px] font-black tracking-[-0.03em] leading-tight text-white mb-6">
+            <p className="text-[13px] font-black text-green-500 uppercase tracking-[0.18em] mb-6">
+              Get started today
+            </p>
+            <h2 className="text-[48px] sm:text-[64px] lg:text-[76px] font-black tracking-[-0.04em] leading-[0.95] text-white mb-8 max-w-3xl">
               Your content is already worth money.
             </h2>
           </RevealUp>
           <RevealUp delay={0.06}>
-            <p className="text-[18px] text-green-100 mb-12 leading-relaxed">
-              Join 50,000 creators already earning from brands they actually like.
-              Takes 2 minutes to get started.
+            <p className="text-[18px] text-zinc-400 mb-12 max-w-[480px] leading-relaxed">
+              Takes 2 minutes. Join 50,000 Saudi creators already earning on their terms.
             </p>
           </RevealUp>
           <RevealUp delay={0.1}>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 rounded-xl bg-white text-green-700 font-black px-10 py-4 text-[16px] hover:bg-green-50 active:scale-[0.98] transition-all"
-            >
-              Create Free Account
-              <ArrowRight size={18} weight="bold" />
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/register"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white font-black px-8 py-4 text-[16px] transition-all"
+              >
+                Create Free Account <ArrowRight size={18} weight="bold" />
+              </Link>
+              <Link
+                href="/discover"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 hover:border-white/20 hover:bg-white/5 text-zinc-300 font-semibold px-8 py-4 text-[16px] transition-all"
+              >
+                Browse campaigns
+              </Link>
+            </div>
           </RevealUp>
         </div>
       </section>
@@ -579,14 +641,14 @@ export default async function HomePage() {
       {/* ─────────────────────────────────────────────────────────────
           FOOTER
       ───────────────────────────────────────────────────────────── */}
-      <footer className="bg-zinc-900 py-14">
+      <footer className="bg-zinc-950 border-t border-white/[0.05] py-14">
         <div className="max-w-[1400px] mx-auto px-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-10 pb-10 border-b border-white/10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-10 pb-10 border-b border-white/[0.06]">
             <div>
               <p className="font-black text-[18px] text-white tracking-tight">
-                Content<span className="text-green-400">Rewards</span>
+                Content<span className="text-green-500">Rewards</span>
               </p>
-              <p className="text-sm text-zinc-500 mt-1.5">Saudi Arabia's creator performance platform</p>
+              <p className="text-[13px] text-zinc-600 mt-1.5">Saudi Arabia's creator performance platform</p>
             </div>
             <nav className="flex flex-wrap gap-x-8 gap-y-2 text-[14px] text-zinc-500">
               {[
@@ -601,7 +663,7 @@ export default async function HomePage() {
               ))}
             </nav>
           </div>
-          <p className="text-xs text-zinc-700 mt-8">
+          <p className="text-[12px] text-zinc-700 mt-8">
             &copy; {new Date().getFullYear()} Content Rewards. All rights reserved.
           </p>
         </div>
