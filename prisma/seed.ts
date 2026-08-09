@@ -345,6 +345,60 @@ async function main() {
     console.log('  No creator found — register an account first, then re-run seed')
   }
 
+  // Seed demo submissions for brand review queue
+  console.log('Seeding demo submissions...')
+
+  if (demoUser) {
+    const campaigns = await prisma.campaign.findMany({
+      take: 3,
+      select: { id: true, name: true },
+    })
+
+    const submissionDefs: Array<{
+      campaignIndex: number
+      contentUrl: string
+      platform: 'TIKTOK' | 'INSTAGRAM' | 'YOUTUBE' | 'X'
+      status: 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED' | 'TRACKING' | 'FLAGGED'
+      earnedAmount: string | null
+      rejectionReason: string | null
+    }> = [
+      { campaignIndex: 0, contentUrl: 'https://www.tiktok.com/@demo/video/1234567890', platform: 'TIKTOK', status: 'PENDING_REVIEW', earnedAmount: null, rejectionReason: null },
+      { campaignIndex: 1, contentUrl: 'https://www.instagram.com/reel/ABC123/', platform: 'INSTAGRAM', status: 'APPROVED', earnedAmount: '560.00', rejectionReason: null },
+      { campaignIndex: 2, contentUrl: 'https://www.youtube.com/watch?v=demoabc123', platform: 'YOUTUBE', status: 'TRACKING', earnedAmount: '320.00', rejectionReason: null },
+      { campaignIndex: 0, contentUrl: 'https://www.tiktok.com/@demo/video/9876543210', platform: 'TIKTOK', status: 'FLAGGED', earnedAmount: null, rejectionReason: null },
+      { campaignIndex: 1, contentUrl: 'https://www.instagram.com/p/XYZ789/', platform: 'INSTAGRAM', status: 'REJECTED', earnedAmount: null, rejectionReason: 'Required hashtags not included in the post.' },
+    ]
+
+    for (const def of submissionDefs) {
+      const campaign = campaigns[def.campaignIndex]
+      if (!campaign) continue
+
+      // Check if this exact URL already exists
+      const existing = await prisma.submission.findFirst({
+        where: { contentUrl: def.contentUrl },
+      })
+      if (existing) {
+        console.log(`  Skipping existing submission: ${def.contentUrl}`)
+        continue
+      }
+
+      await prisma.submission.create({
+        data: {
+          campaignId: campaign.id,
+          userId: demoUser.id,
+          contentUrl: def.contentUrl,
+          platform: def.platform,
+          status: def.status,
+          earnedAmount: def.earnedAmount ?? undefined,
+          rejectionReason: def.rejectionReason ?? undefined,
+          reviewedAt: ['APPROVED', 'REJECTED', 'TRACKING', 'FLAGGED'].includes(def.status) ? new Date() : null,
+        },
+      })
+
+      console.log(`  Created submission: ${def.platform} ${def.status}`)
+    }
+  }
+
   console.log('Done.')
 }
 

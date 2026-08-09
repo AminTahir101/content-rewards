@@ -326,12 +326,36 @@ model Submission {
   reviewedAt   DateTime?
   updatedAt    DateTime         @updatedAt
 
-  campaign Campaign @relation(fields: [campaignId], references: [id])
+  campaign Campaign         @relation(fields: [campaignId], references: [id])
+  reviews  SubmissionReview[]
 
   @@index([userId])
   @@index([campaignId])
   @@index([userId, campaignId])
+  @@index([status])
   @@map("submissions")
+}
+
+enum ReviewAction {
+  APPROVED
+  REJECTED
+  FLAGGED
+  HOLD
+}
+
+model SubmissionReview {
+  id           String       @id @default(uuid())
+  submissionId String
+  reviewerId   String       // brand user or admin who reviewed
+  action       ReviewAction
+  reason       String?      @db.Text
+  notes        String?      @db.Text
+  createdAt    DateTime     @default(now())
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+  @@map("submission_reviews")
 }
 
 // ─── Wallet / Ledger ─────────────────────────────────────────────────────────
