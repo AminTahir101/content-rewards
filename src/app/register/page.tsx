@@ -4,21 +4,25 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { CheckCircle, ArrowRight } from '@phosphor-icons/react'
+import { useTranslations } from 'next-intl'
 import Logo from '@/components/Logo'
 
 type Role = 'CREATOR' | 'BRAND' | 'AGENCY'
 
-const ROLES: { value: Role; label: string; detail: string }[] = [
-  { value: 'CREATOR', label: 'Creator',  detail: 'Earn from brand campaigns' },
-  { value: 'BRAND',   label: 'Brand',    detail: 'Run creator campaigns' },
-  { value: 'AGENCY',  label: 'Agency',   detail: 'Manage multiple brands' },
-]
-
 export default function RegisterPage() {
   const router = useRouter()
+  const t = useTranslations('auth')
   const [role, setRole] = useState<Role>('CREATOR')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+
+  const ROLES: { value: Role; label: string; detail: string }[] = [
+    { value: 'CREATOR', label: t('roleCreator'), detail: t('roleCreatorDetail') },
+    { value: 'BRAND',   label: t('roleBrand'),   detail: t('roleBrandDetail')   },
+    { value: 'AGENCY',  label: t('roleAgency'),  detail: t('roleAgencyDetail')  },
+  ]
+
+  const bullets = [t('heroBullet1'), t('heroBullet2'), t('heroBullet3')]
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -41,7 +45,7 @@ export default function RegisterPage() {
     setLoading(false)
 
     if (!res.ok) {
-      setError(data.error ?? 'Registration failed. Please try again.')
+      setError(data.error ?? t('registrationFailed'))
       return
     }
 
@@ -58,18 +62,15 @@ export default function RegisterPage() {
         </Link>
 
         <div>
-          <p className="text-[11px] font-black text-green-500 uppercase tracking-[0.18em] mb-5">
-            Saudi Arabia&apos;s creator platform
+          <p className="text-[52px] font-black text-white tracking-[-0.03em] leading-[0.95] mb-6">
+            {t('heroTagline')}<br />
+            <span className="text-green-500">{t('heroPays')}</span>
           </p>
-          <h2 className="text-[36px] font-black text-white tracking-[-0.025em] leading-tight mb-10">
-            Turn your content<br />into income.
-          </h2>
+          <p className="text-[15px] text-zinc-400 leading-relaxed max-w-[320px] mb-8">
+            {t('heroSubtext')}
+          </p>
           <div className="space-y-4">
-            {[
-              'Join active brand campaigns in one tap',
-              'Earn per verified view — no guesswork',
-              'Withdraw to your Saudi bank account',
-            ].map((line) => (
+            {bullets.map((line) => (
               <div key={line} className="flex items-start gap-3">
                 <CheckCircle size={18} weight="fill" className="text-green-500 shrink-0 mt-0.5" />
                 <p className="text-[14px] text-zinc-400 leading-snug">{line}</p>
@@ -79,10 +80,20 @@ export default function RegisterPage() {
         </div>
 
         <div className="border-t border-white/[0.08] pt-8">
-          <p className="text-[14px] text-zinc-300 leading-snug mb-3">
-            &ldquo;I earned more in one month than I used to make in three.&rdquo;
-          </p>
-          <p className="text-[12px] font-semibold text-zinc-500">Sarah A. — @saraha_ksa · SAR 18,400 earned</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[28px] font-black text-white tracking-tight leading-none">SAR 12M+</p>
+              <p className="text-[12px] text-zinc-500 mt-1">{t('paidToCreators')}</p>
+            </div>
+            <div>
+              <p className="text-[28px] font-black text-white tracking-tight leading-none">800M+</p>
+              <p className="text-[12px] text-zinc-500 mt-1">{t('verifiedViews')}</p>
+            </div>
+            <div>
+              <p className="text-[28px] font-black text-white tracking-tight leading-none">40+</p>
+              <p className="text-[12px] text-zinc-500 mt-1">{t('liveCampaigns')}</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -95,12 +106,12 @@ export default function RegisterPage() {
 
         <div className="w-full max-w-[400px]">
           <h1 className="text-[28px] font-black text-zinc-950 dark:text-white tracking-tight mb-1">
-            Create your account
+            {t('registerTitle')}
           </h1>
           <p className="text-[15px] text-zinc-400 mb-8">
-            Already have one?{' '}
+            {t('hasAccount')}{' '}
             <Link href="/login" className="text-green-600 dark:text-green-400 font-semibold hover:text-green-700 transition-colors">
-              Log in
+              {t('signInLink')}
             </Link>
           </p>
 
@@ -113,7 +124,7 @@ export default function RegisterPage() {
 
             {/* Role selector */}
             <div>
-              <p className="text-[13px] font-semibold text-zinc-700 dark:text-zinc-300 mb-2">I am a…</p>
+              <p className="text-[13px] font-semibold text-zinc-700 dark:text-zinc-300 mb-2">{t('selectRole')}</p>
               <div className="grid grid-cols-3 gap-2">
                 {ROLES.map((r) => (
                   <button
@@ -140,13 +151,13 @@ export default function RegisterPage() {
             {/* Name */}
             <div>
               <label htmlFor="name" className="block text-[13px] font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Full Name
+                {t('name')}
               </label>
               <input
                 id="name"
                 name="name"
                 type="text"
-                placeholder="Your name"
+                placeholder={t('namePlaceholder')}
                 required
                 autoComplete="name"
                 className="w-full rounded-xl border border-zinc-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.05] px-4 py-3 text-[15px] text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
@@ -156,13 +167,13 @@ export default function RegisterPage() {
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-[13px] font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Email
+                {t('email')}
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t('emailPlaceholder')}
                 required
                 autoComplete="email"
                 className="w-full rounded-xl border border-zinc-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.05] px-4 py-3 text-[15px] text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
@@ -172,13 +183,13 @@ export default function RegisterPage() {
             {/* Password */}
             <div>
               <label htmlFor="password" className="block text-[13px] font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Password
+                {t('password')}
               </label>
               <input
                 id="password"
                 name="password"
                 type="password"
-                placeholder="At least 8 characters"
+                placeholder={t('passwordPlaceholder')}
                 required
                 autoComplete="new-password"
                 minLength={8}
@@ -191,16 +202,16 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none text-white font-black px-6 py-3.5 text-[15px] transition-all"
             >
-              {loading ? 'Creating account…' : (
-                <>Create Account <ArrowRight size={16} weight="bold" className="rtl:rotate-180" /></>
+              {loading ? t('creatingAccount') : (
+                <>{t('createAccount')} <ArrowRight size={16} weight="bold" className="rtl:rotate-180" /></>
               )}
             </button>
 
             <p className="text-center text-[12px] text-zinc-400">
-              By creating an account you agree to our{' '}
-              <Link href="/terms" className="underline hover:text-zinc-600 dark:hover:text-zinc-300">Terms</Link>
-              {' '}and{' '}
-              <Link href="/privacy" className="underline hover:text-zinc-600 dark:hover:text-zinc-300">Privacy Policy</Link>.
+              {t('termsNoteRegister')}{' '}
+              <Link href="/terms" className="underline hover:text-zinc-600 dark:hover:text-zinc-300">{t('termsLink')}</Link>
+              {' '}{t('andText')}{' '}
+              <Link href="/privacy" className="underline hover:text-zinc-600 dark:hover:text-zinc-300">{t('privacyLink')}</Link>.
             </p>
           </form>
         </div>

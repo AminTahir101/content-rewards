@@ -111,14 +111,14 @@ export default async function HomePage() {
         <div className="relative z-10 max-w-[1400px] mx-auto px-6 w-full py-32 lg:py-0">
           <div className="max-w-[560px]">
             <RevealUp>
-              <h1 className="text-[64px] sm:text-[80px] lg:text-[90px] font-black tracking-[-0.04em] leading-[0.93] rtl:leading-[1.15] text-zinc-950 dark:text-white mb-8">
+              <h1 className="text-[52px] sm:text-[64px] lg:text-[72px] font-black tracking-[-0.03em] leading-[1.05] rtl:leading-[1.2] text-zinc-950 dark:text-white mb-6">
                 {t('hero.headline1')}<br />
                 <em className="not-italic text-green-600 dark:text-green-400">{t('hero.headline2')}</em>
               </h1>
             </RevealUp>
 
             <RevealUp delay={0.06}>
-              <p className="text-[18px] text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10 max-w-[440px]">
+              <p className="text-[17px] text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10 max-w-[400px]">
                 {t('hero.subtext')}
               </p>
             </RevealUp>
@@ -126,7 +126,7 @@ export default async function HomePage() {
             <RevealUp delay={0.1}>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
-                  href="/register"
+                  href="/login?tab=register"
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white font-black px-8 py-4 text-[16px] transition-all"
                 >
                   {t('hero.ctaPrimary')}
@@ -391,7 +391,7 @@ export default async function HomePage() {
               <RevealUp delay={0.3}>
                 <div className="mt-10 pt-10 border-t border-zinc-100 dark:border-white/[0.06]">
                   <Link
-                    href="/register"
+                    href="/login?tab=register"
                     className="inline-flex items-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white font-black px-7 py-3.5 text-[15px] transition-all"
                   >
                     {t('howItWorks.cta')} <ArrowRight size={16} weight="bold" className="rtl:rotate-180" />
@@ -458,7 +458,7 @@ export default async function HomePage() {
               </div>
               <div className="mt-8">
                 <Link
-                  href="/register"
+                  href="/login?tab=register"
                   className="inline-flex items-center gap-2 rounded-xl bg-white text-zinc-900 font-black px-6 py-3 text-[14px] hover:bg-zinc-100 active:scale-[0.98] transition-all"
                 >
                   {t('forBrands.cta')} <ArrowRight size={15} weight="bold" className="rtl:rotate-180" />
@@ -600,7 +600,7 @@ export default async function HomePage() {
           <RevealUp delay={0.1}>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
-                href="/register"
+                href="/login?tab=register"
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white font-black px-8 py-4 text-[16px] transition-all"
               >
                 {t('cta.primary')} <ArrowRight size={18} weight="bold" className="rtl:rotate-180" />

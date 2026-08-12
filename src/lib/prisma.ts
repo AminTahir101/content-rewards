@@ -8,9 +8,10 @@ function createPrismaClient() {
   if (!connectionString) {
     throw new Error('No database connection string found (POSTGRES_PRISMA_URL or DATABASE_URL)')
   }
+  const isRemote = !connectionString.includes('localhost') && !connectionString.includes('127.0.0.1')
   const pool = new Pool({
     connectionString,
-    ssl: { rejectUnauthorized: false },
+    ...(isRemote ? { ssl: { rejectUnauthorized: false } } : {}),
   })
   const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })

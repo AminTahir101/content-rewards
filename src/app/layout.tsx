@@ -24,7 +24,7 @@ const ibmPlexArabic = IBM_Plex_Sans_Arabic({
 })
 
 export const metadata: Metadata = {
-  title: 'Content Rewards',
+  title: 'Mo7tawa Rewards',
   description: 'Creator performance marketing platform',
 }
 

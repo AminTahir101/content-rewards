@@ -292,7 +292,7 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
 
 function AuthPanel() {
   const params          = useSearchParams()
-  const defaultTab: Tab = params.get('registered') === '1' ? 'login' : 'login'
+  const defaultTab: Tab = params.get('tab') === 'register' ? 'register' : 'login'
   const [tab, setTab]   = useState<Tab>(defaultTab)
   const t = useTranslations('auth')
 

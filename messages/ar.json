@@ -27,17 +27,17 @@
     "password": "كلمة المرور",
     "name": "الاسم الكامل",
     "loginTitle": "مرحباً بعودتك",
-    "loginSubtitle": "سجّل دخولك إلى Content Rewards",
-    "registerTitle": "أنشئ حسابك",
-    "registerSubtitle": "أنشئ حسابك وابدأ الآن",
-    "noAccount": "ليس لديك حساب؟",
+    "loginSubtitle": "سجّل دخولك إلى محتوى ريواردز",
+    "registerTitle": "انضم إلى محتوى ريواردز",
+    "registerSubtitle": "ابدأ الربح من محتواك اليوم",
+    "noAccount": "جديد هنا؟",
     "hasAccount": "لديك حساب بالفعل؟",
     "signUpLink": "أنشئ حساباً مجاناً",
     "signInLink": "تسجيل الدخول",
     "roleCreator": "منشئ محتوى",
     "roleBrand": "علامة تجارية",
     "roleAgency": "وكالة",
-    "selectRole": "أنا\u2026",
+    "selectRole": "أنضم بصفتي\u2026",
     "roleCreatorDetail": "اربح من حملات العلامات التجارية",
     "roleBrandDetail": "أطلق حملات للمنشئين",
     "roleAgencyDetail": "أدِر علامات تجارية متعددة",
@@ -46,22 +46,22 @@
     "registrationFailed": "فشل التسجيل. حاول مجدداً.",
     "emailPlaceholder": "you@example.com",
     "passwordPlaceholder": "8 أحرف على الأقل",
-    "namePlaceholder": "اسمك",
+    "namePlaceholder": "اسمك الكامل",
     "loginButton": "تسجيل الدخول",
     "loggingIn": "جارٍ تسجيل الدخول\u2026",
     "creatingAccount": "جارٍ إنشاء الحساب\u2026",
-    "createAccount": "إنشاء حساب",
+    "createAccount": "إنشاء حسابي",
     "termsNote": "بتسجيل الدخول أنت توافق على",
     "termsNoteRegister": "بإنشاء حساب أنت توافق على",
     "termsLink": "الشروط",
     "andText": "و",
     "privacyLink": "سياسة الخصوصية",
-    "heroTagline": "كل مشاهدة",
-    "heroPays": "تدفع.",
-    "heroSubtext": "50,000 منشئ محتوى سعودي يربحون من كبرى العلامات التجارية.",
+    "heroTagline": "اربح من",
+    "heroPays": "كل مشاهدة.",
+    "heroSubtext": "انضم إلى 50,000 منشئ محتوى عربي يربحون من كبرى العلامات التجارية — لكل مشاهدة موثقة، تلقائياً.",
     "heroBullet1": "انضم لحملات العلامات التجارية بنقرة واحدة",
     "heroBullet2": "اربح لكل مشاهدة موثقة \u2014 بلا تخمين",
-    "heroBullet3": "اسحب إلى حسابك البنكي السعودي",
+    "heroBullet3": "اسحب أرباحك فوراً",
     "paidToCreators": "صُرف للمنشئين",
     "verifiedViews": "مشاهدة موثقة",
     "liveCampaigns": "حملة نشطة"
@@ -381,16 +381,16 @@
     "brandDashboard": "لوحة تحكم العلامة التجارية",
     "createCampaign": "إنشاء حملة",
     "noCampaignsYet": "لا توجد حملات بعد",
-    "noCampaignsYetDetail": "أنشئ حملتك الأولى وابدأ بالوصول لآلاف المنشئين السعوديين.",
-    "valueCreators": "+50,000 منشئ",
-    "valueCreatorsDetail": "وصول لشبكة موثقة من المنشئين السعوديين عبر تيك توك وإنستغرام ويوتيوب و X.",
+    "noCampaignsYetDetail": "أنشئ حملتك الأولى وابدأ بالوصول لآلاف صُنّاع المحتوى العرب.",
+    "valueCreators": "+50,000 صانع محتوى",
+    "valueCreatorsDetail": "وصول لشبكة موثقة من صُنّاع المحتوى العرب عبر تيك توك وإنستغرام ويوتيوب و X.",
     "valuePayPerView": "ادفع لكل مشاهدة موثقة",
     "valuePayPerViewDetail": "حدد CPM وادفع فقط للأداء الحقيقي المفحوص. لا هدر في الإنفاق.",
     "valueAnalytics": "تحليلات فورية",
     "valueAnalyticsDetail": "تابع الإنفاق والمشاهدات والتفاعل وأداء المنشئين أثناء تشغيل الحملات.",
     "performanceMarketing": "التسويق بالأداء",
     "heroCTA": "الوصول لأكثر من 800 مليون مشاهدة موثقة",
-    "heroCTAHighlight": "مع المنشئين السعوديين.",
+    "heroCTAHighlight": "مع صُنّاع المحتوى العرب.",
     "launchFirstCampaign": "أطلق حملتك الأولى",
     "budgetDeployed": "الميزانية المنشورة",
     "fraudScreened": "مفحوصة",
@@ -540,7 +540,7 @@
     "liveNow": "متاح الآن",
     "everyViewPays": "كل مشاهدة تنشرها",
     "pays": "تدفع.",
-    "saudiBrandsPaying": "العلامات التجارية السعودية تدفع مقابل الأداء الحقيقي الموثق."
+    "saudiBrandsPaying": "كبرى العلامات التجارية تدفع مقابل الأداء الحقيقي الموثق."
   },
   "myCampaigns": {
     "title": "حملاتي",
@@ -586,9 +586,9 @@
       "switchLang": "English"
     },
     "hero": {
-      "headline1": "اربح من كل",
-      "headline2": "مشاهدة.",
-      "subtext": "انضم إلى 50,000 منشئ محتوى سعودي يربحون من كبرى العلامات التجارية — لكل مشاهدة موثقة، تلقائياً.",
+      "headline1": "محتوى ريواردز",
+      "headline2": "اربح من كل مشاهدة.",
+      "subtext": "انضم إلى 50,000 منشئ محتوى عربي واكسب من اكبر البراندات.",
       "ctaPrimary": "ابدأ الربح مجاناً",
       "ctaSecondary": "تصفح الحملات",
       "liveBadge": "+{count} حملة تدفع الآن"
@@ -599,7 +599,7 @@
     "stats": {
       "0": { "value": "+12 مليون ريال", "label": "صُرف للمنشئين",   "detail": "ولا يزال يتزايد" },
       "1": { "value": "+800 مليون",     "label": "مشاهدة موثقة",    "detail": "بدون احتيال" },
-      "2": { "value": "+50,000",        "label": "منشئ نشط",        "detail": "في المملكة العربية السعودية" },
+      "2": { "value": "+50,000",        "label": "صانع محتوى نشط",  "detail": "في منطقة الشرق الأوسط وشمال أفريقيا" },
       "3": { "value": "+40",            "label": "حملة نشطة",       "detail": "الآن" }
     },
     "campaigns": {
@@ -629,7 +629,7 @@
       "dashTitle": "لوحة تحكم فورية",
       "dashBody": "تابع المشاهدات الموثقة وأداء المنشئين ومعدل الإنفاق والميزانية المتبقية لكل حملة.",
       "networkStat": "+50,000",
-      "networkLabel": "منشئ موثق في السعودية والإمارات والكويت",
+      "networkLabel": "صانع محتوى عربي موثق في منطقة الشرق الأوسط وشمال أفريقيا",
       "cta": "أطلق حملة"
     },
     "testimonials": {
@@ -659,13 +659,13 @@
     "cta": {
       "eyebrow": "ابدأ اليوم",
       "headline": "محتواك يستحق المال الآن.",
-      "subtext": "دقيقتان فقط. انضم إلى 50,000 منشئ سعودي يكسبون بشروطهم.",
+      "subtext": "دقيقتان فقط. انضم إلى 50,000 صانع محتوى عربي يكسبون بشروطهم.",
       "primary": "إنشاء حساب مجاني",
       "secondary": "تصفح الحملات"
     },
     "footer": {
-      "tagline": "منصة المنشئين الأولى في المملكة العربية السعودية",
-      "copyright": "© {year} Content Rewards. جميع الحقوق محفوظة."
+      "tagline": "منصة الكليبنق الاولى في الشرق الأوسط وشمال افريقيا",
+      "copyright": "© {year} Mo7tawa Rewards. جميع الحقوق محفوظة."
     }
   }
 }

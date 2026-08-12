@@ -3,8 +3,8 @@ import { getLocale } from 'next-intl/server'
 import MarketingNav from '@/components/marketing/MarketingNav'
 
 export const metadata = {
-  title: 'Privacy Policy — ContentRewards',
-  description: 'Privacy Policy for ContentRewards, the Saudi creator performance marketing platform.',
+  title: 'Privacy Policy — Mo7tawa Rewards',
+  description: 'Privacy Policy for Mo7tawa Rewards, the Arab creator clipping platform — MENA.',
 }
 
 const LAST_UPDATED = 'August 10, 2026'
@@ -75,7 +75,7 @@ export default async function PrivacyPage() {
 
             {/* Intro */}
             <p className="text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed mb-10 pb-10 border-b border-zinc-100 dark:border-white/[0.06]">
-              ContentRewards is committed to protecting your personal data. This Privacy Policy explains what data we collect, how we use it, and your rights under Saudi Arabian law. By using the ContentRewards platform you agree to the practices described in this policy.
+              Mo7tawa Rewards is committed to protecting your personal data. This Privacy Policy explains what data we collect, how we use it, and your rights under Saudi Arabian law. By using the Mo7tawa Rewards platform you agree to the practices described in this policy.
             </p>
 
             {/* Data Collected */}
@@ -130,7 +130,7 @@ export default async function PrivacyPage() {
                 1.5 Financial Data
               </h3>
               <p className="text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                We collect payment information required to process payouts and campaign funding. Full payment card details are processed exclusively by our payment partners and are not stored on ContentRewards servers. We store transaction records, amounts, and status for accounting and dispute purposes.
+                We collect payment information required to process payouts and campaign funding. Full payment card details are processed exclusively by our payment partners and are not stored on Mo7tawa Rewards servers. We store transaction records, amounts, and status for accounting and dispute purposes.
               </p>
             </section>
 
@@ -145,7 +145,7 @@ export default async function PrivacyPage() {
               <ul className="list-disc ps-6 space-y-2 text-[15px] text-zinc-600 dark:text-zinc-400 mb-4">
                 <li>
                   <strong className="font-semibold text-zinc-800 dark:text-zinc-200">Platform operation:</strong>{' '}
-                  To provide and maintain the ContentRewards service, manage user accounts, and process campaign participation.
+                  To provide and maintain the Mo7tawa Rewards service, manage user accounts, and process campaign participation.
                 </li>
                 <li>
                   <strong className="font-semibold text-zinc-800 dark:text-zinc-200">Content verification:</strong>{' '}
@@ -169,7 +169,7 @@ export default async function PrivacyPage() {
                 </li>
                 <li>
                   <strong className="font-semibold text-zinc-800 dark:text-zinc-200">Analytics and improvement:</strong>{' '}
-                  To understand platform usage patterns and improve the ContentRewards experience.
+                  To understand platform usage patterns and improve the Mo7tawa Rewards experience.
                 </li>
               </ul>
             </section>
@@ -180,7 +180,7 @@ export default async function PrivacyPage() {
                 3. Data Sharing
               </h2>
               <p className="text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-                ContentRewards does not sell your personal data. We may share limited data with the following categories of partners:
+                Mo7tawa Rewards does not sell your personal data. We may share limited data with the following categories of partners:
               </p>
 
               <h3 className="text-[16px] font-black text-zinc-800 dark:text-zinc-200 mb-2 mt-6">
@@ -208,7 +208,7 @@ export default async function PrivacyPage() {
                 3.4 Legal Requirements
               </h3>
               <p className="text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                We may disclose your data to Saudi authorities if required by law, court order, or to protect the legal rights, safety, or property of ContentRewards, our users, or the public.
+                We may disclose your data to Saudi authorities if required by law, court order, or to protect the legal rights, safety, or property of Mo7tawa Rewards, our users, or the public.
               </p>
             </section>
 
@@ -218,13 +218,13 @@ export default async function PrivacyPage() {
                 4. Saudi PDPL Compliance
               </h2>
               <p className="text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-                ContentRewards processes personal data in compliance with the Saudi Personal Data Protection Law (PDPL) (Royal Decree No. M/19, 1443H) and its implementing regulations. Our lawful bases for processing personal data include:
+                Mo7tawa Rewards processes personal data in compliance with the Saudi Personal Data Protection Law (PDPL) (Royal Decree No. M/19, 1443H) and its implementing regulations. Our lawful bases for processing personal data include:
               </p>
               <ul className="list-disc ps-6 space-y-1.5 text-[15px] text-zinc-600 dark:text-zinc-400 mb-4">
                 <li>Your explicit consent where required</li>
                 <li>Performance of a contract with you (platform terms)</li>
                 <li>Compliance with legal obligations</li>
-                <li>Legitimate interests of ContentRewards in preventing fraud and operating the platform</li>
+                <li>Legitimate interests of Mo7tawa Rewards in preventing fraud and operating the platform</li>
               </ul>
               <p className="text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 Cross-border data transfers are conducted in accordance with PDPL requirements. Where data is processed outside Saudi Arabia, we ensure appropriate contractual safeguards are in place.
@@ -296,7 +296,7 @@ export default async function PrivacyPage() {
                 7. Cookies
               </h2>
               <p className="text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-                ContentRewards uses cookies and similar tracking technologies to operate the platform and understand usage. Types of cookies we use:
+                Mo7tawa Rewards uses cookies and similar tracking technologies to operate the platform and understand usage. Types of cookies we use:
               </p>
               <ul className="list-disc ps-6 space-y-2 text-[15px] text-zinc-600 dark:text-zinc-400 mb-4">
                 <li>
@@ -366,7 +366,7 @@ export default async function PrivacyPage() {
       <footer className="mt-16 bg-zinc-950 border-t border-white/[0.05] py-10">
         <div className="max-w-[1400px] mx-auto px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <p className="text-[12px] text-zinc-600">
-            © {new Date().getFullYear()} ContentRewards. All rights reserved. Saudi Arabia.
+            © {new Date().getFullYear()} Mo7tawa Rewards. All rights reserved. Saudi Arabia.
           </p>
           <div className="flex items-center gap-6 text-[13px] text-zinc-500">
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
