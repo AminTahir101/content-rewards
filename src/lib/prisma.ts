@@ -1,5 +1,6 @@
 import { PrismaClient } from '@/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
+import { Pool } from 'pg'
 
 function createPrismaClient() {
   const connectionString =
@@ -7,7 +8,11 @@ function createPrismaClient() {
   if (!connectionString) {
     throw new Error('No database connection string found (POSTGRES_PRISMA_URL or DATABASE_URL)')
   }
-  const adapter = new PrismaPg({ connectionString, ssl: { rejectUnauthorized: false } })
+  const pool = new Pool({
+    connectionString,
+    ssl: { rejectUnauthorized: false },
+  })
+  const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
 }
 
