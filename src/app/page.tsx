@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import Logo from '@/components/Logo'
 import {
   ArrowRight,
   TrendUp,
@@ -83,15 +84,13 @@ export default async function HomePage() {
   }))
 
   return (
-    <div className="min-h-[100dvh] bg-white text-zinc-900">
+    <div className="min-h-[100dvh] bg-white dark:bg-page text-zinc-900 dark:text-white">
       <MarketingNav locale={locale} />
 
       {/* ─────────────────────────────────────────────────────────────
           HERO
-          Layout family: edge-bleeding full-height photo (absolute end),
-          copy hard-start — no grid column, no floating cards
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative min-h-[100dvh] bg-white flex items-center overflow-hidden">
+      <section className="relative min-h-[100dvh] bg-white dark:bg-page flex items-center overflow-hidden">
 
         {/* Edge-bleeding photo — absolute, inline-end half */}
         <div className="absolute inset-y-0 end-0 w-[52%] hidden lg:block pointer-events-none">
@@ -102,24 +101,24 @@ export default async function HomePage() {
             priority
             className="object-cover object-top"
           />
-          {/* Start fade to white */}
-          <div className="absolute inset-y-0 start-0 w-48 ltr:bg-gradient-to-r rtl:bg-gradient-to-l from-white to-transparent z-10" />
-          {/* Bottom fade to white */}
-          <div className="absolute bottom-0 start-0 end-0 h-28 bg-gradient-to-t from-white to-transparent z-10" />
+          {/* Start fade */}
+          <div className="absolute inset-y-0 start-0 w-48 ltr:bg-gradient-to-r rtl:bg-gradient-to-l from-white dark:from-[#0d0d0d] to-transparent z-10" />
+          {/* Bottom fade */}
+          <div className="absolute bottom-0 start-0 end-0 h-28 bg-gradient-to-t from-white dark:from-[#0d0d0d] to-transparent z-10" />
         </div>
 
-        {/* Copy — start column only, never overlapping image */}
+        {/* Copy */}
         <div className="relative z-10 max-w-[1400px] mx-auto px-6 w-full py-32 lg:py-0">
           <div className="max-w-[560px]">
             <RevealUp>
-              <h1 className="text-[64px] sm:text-[80px] lg:text-[90px] font-black tracking-[-0.04em] leading-[0.93] rtl:leading-[1.15] text-zinc-950 mb-8">
+              <h1 className="text-[64px] sm:text-[80px] lg:text-[90px] font-black tracking-[-0.04em] leading-[0.93] rtl:leading-[1.15] text-zinc-950 dark:text-white mb-8">
                 {t('hero.headline1')}<br />
-                <em className="not-italic text-green-600">{t('hero.headline2')}</em>
+                <em className="not-italic text-green-600 dark:text-green-400">{t('hero.headline2')}</em>
               </h1>
             </RevealUp>
 
             <RevealUp delay={0.06}>
-              <p className="text-[18px] text-zinc-500 leading-relaxed mb-10 max-w-[440px]">
+              <p className="text-[18px] text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10 max-w-[440px]">
                 {t('hero.subtext')}
               </p>
             </RevealUp>
@@ -135,7 +134,7 @@ export default async function HomePage() {
                 </Link>
                 <Link
                   href="/discover"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-zinc-700 font-semibold px-8 py-4 text-[16px] transition-all"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-white/[0.1] hover:border-zinc-300 dark:hover:border-white/20 hover:bg-zinc-50 dark:hover:bg-white/[0.04] text-zinc-700 dark:text-zinc-300 font-semibold px-8 py-4 text-[16px] transition-all"
                 >
                   {t('hero.ctaSecondary')}
                 </Link>
@@ -144,9 +143,9 @@ export default async function HomePage() {
 
             {/* Live indicator */}
             <RevealUp delay={0.14}>
-              <div className="mt-12 inline-flex items-center gap-3 px-4 py-2.5 rounded-full border border-zinc-200 bg-zinc-50">
+              <div className="mt-12 inline-flex items-center gap-3 px-4 py-2.5 rounded-full border border-zinc-200 dark:border-white/[0.08] bg-zinc-50 dark:bg-white/[0.04]">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[13px] font-semibold text-zinc-600">
+                <span className="text-[13px] font-semibold text-zinc-600 dark:text-zinc-400">
                   {t('hero.liveBadge', { count: campaigns.length > 0 ? campaigns.length : '40' })}
                 </span>
               </div>
@@ -156,13 +155,12 @@ export default async function HomePage() {
 
         {/* Scroll hint */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 hidden lg:block">
-          <div className="w-[1px] h-12 bg-gradient-to-b from-zinc-300 to-transparent mx-auto" />
+          <div className="w-[1px] h-12 bg-gradient-to-b from-zinc-300 dark:from-white/20 to-transparent mx-auto" />
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          BRAND STRIP — dark inverted marquee
-          Layout family: dark band / infinite scroll strip
+          BRAND STRIP — always dark
       ───────────────────────────────────────────────────────────── */}
       <section className="bg-zinc-950 py-5">
         <div className="mb-4 px-6">
@@ -174,19 +172,18 @@ export default async function HomePage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          STATS — large numbers separated by hairline rules, no box
-          Layout family: open stat row with vertical dividers
+          STATS
       ───────────────────────────────────────────────────────────── */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-white dark:bg-page">
         <div className="max-w-[1400px] mx-auto px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-zinc-100">
+          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-zinc-100 dark:divide-white/[0.06]">
             {([0, 1, 2, 3] as const).map((i) => (
               <RevealStagger key={i} delay={i * 0.07} className="px-8 first:ps-0 last:pe-0 py-6">
-                <p className="text-[40px] sm:text-[48px] font-black text-zinc-950 tracking-[-0.03em] leading-none">
+                <p className="text-[40px] sm:text-[48px] font-black text-zinc-950 dark:text-white tracking-[-0.03em] leading-none">
                   {t(`stats.${i}.value`)}
                 </p>
-                <p className="text-[14px] font-semibold text-zinc-700 mt-3">{t(`stats.${i}.label`)}</p>
-                <p className="text-[13px] text-zinc-400 mt-0.5">{t(`stats.${i}.detail`)}</p>
+                <p className="text-[14px] font-semibold text-zinc-700 dark:text-zinc-300 mt-3">{t(`stats.${i}.label`)}</p>
+                <p className="text-[13px] text-zinc-400 dark:text-zinc-500 mt-0.5">{t(`stats.${i}.detail`)}</p>
               </RevealStagger>
             ))}
           </div>
@@ -194,22 +191,21 @@ export default async function HomePage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          CAMPAIGNS — 1 large featured card + compact list rows
-          Layout family: featured hero card + divider-separated list
+          CAMPAIGNS
       ───────────────────────────────────────────────────────────── */}
-      <section className="py-24 bg-zinc-50 border-y border-zinc-100">
+      <section className="py-24 bg-zinc-50 dark:bg-surface border-y border-zinc-100 dark:border-white/[0.06]">
         <div className="max-w-[1400px] mx-auto px-6">
 
           <div className="flex items-end justify-between mb-10">
             <RevealUp>
-              <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight">
+              <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight text-zinc-900 dark:text-white">
                 {t('campaigns.title')}
               </h2>
             </RevealUp>
             <RevealUp delay={0.04}>
               <Link
                 href="/discover"
-                className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-green-600 hover:text-green-700 transition-colors"
+                className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors"
               >
                 {t('campaigns.viewAll')} <ArrowRight size={15} weight="bold" className="rtl:rotate-180" />
               </Link>
@@ -221,7 +217,7 @@ export default async function HomePage() {
             <RevealUp className="mb-4">
               <Link
                 href={`/campaigns/${featured.slug}`}
-                className="group relative flex flex-col lg:flex-row rounded-2xl overflow-hidden border border-zinc-200 bg-white hover:border-green-300 hover:shadow-lg hover:shadow-green-50 transition-all"
+                className="group relative flex flex-col lg:flex-row rounded-2xl overflow-hidden border border-zinc-200 dark:border-white/[0.07] bg-white dark:bg-[#1a1a1a] hover:border-green-300 dark:hover:border-green-500/30 hover:shadow-lg hover:shadow-green-50 dark:hover:shadow-green-500/5 transition-all"
               >
                 <div className="relative lg:w-[460px] shrink-0 min-h-[260px] lg:min-h-[320px]">
                   <Image
@@ -238,30 +234,30 @@ export default async function HomePage() {
                       <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">
                         {featured.organization.name}
                       </span>
-                      <span className="w-1 h-1 rounded-full bg-zinc-300" />
-                      <span className="text-[11px] font-bold text-green-600 uppercase tracking-widest">
+                      <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+                      <span className="text-[11px] font-bold text-green-600 dark:text-green-400 uppercase tracking-widest">
                         {CATEGORY_LABEL[featured.category] ?? featured.category}
                       </span>
                     </div>
-                    <h3 className="text-[28px] lg:text-[32px] font-black tracking-tight text-zinc-900 group-hover:text-green-700 transition-colors leading-tight mb-4">
+                    <h3 className="text-[28px] lg:text-[32px] font-black tracking-tight text-zinc-900 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors leading-tight mb-4">
                       {featured.name}
                     </h3>
                     <div className="flex flex-wrap gap-1.5">
                       {featured.platforms.map(({ platform }) => (
                         <span
                           key={platform}
-                          className="text-[12px] font-semibold bg-zinc-100 text-zinc-600 px-3 py-1 rounded-lg"
+                          className="text-[12px] font-semibold bg-zinc-100 dark:bg-white/[0.07] text-zinc-600 dark:text-zinc-400 px-3 py-1 rounded-lg"
                         >
                           {PLATFORM_LABEL[platform]}
                         </span>
                       ))}
                     </div>
                   </div>
-                  <div className="flex items-end gap-8 mt-8 pt-8 border-t border-zinc-100">
+                  <div className="flex items-end gap-8 mt-8 pt-8 border-t border-zinc-100 dark:border-white/[0.07]">
                     <div>
                       {featured.cpm && (
                         <>
-                          <p className="text-[42px] font-black text-green-600 tracking-tight leading-none">
+                          <p className="text-[42px] font-black text-green-600 dark:text-green-400 tracking-tight leading-none">
                             SAR {featured.cpm}
                           </p>
                           <p className="text-[13px] font-semibold text-zinc-400 mt-1">{t('campaigns.perViews')}</p>
@@ -271,7 +267,7 @@ export default async function HomePage() {
                     {featured.maxCreatorPayout && (
                       <div>
                         <p className="text-[13px] font-semibold text-zinc-400">{t('campaigns.maxPayout')}</p>
-                        <p className="text-[18px] font-black text-zinc-800">
+                        <p className="text-[18px] font-black text-zinc-800 dark:text-zinc-200">
                           SAR {parseFloat(featured.maxCreatorPayout).toLocaleString('en-SA')}
                         </p>
                       </div>
@@ -287,16 +283,16 @@ export default async function HomePage() {
             </RevealUp>
           )}
 
-          {/* Compact list rows for remaining campaigns */}
+          {/* Compact list rows */}
           {rest.length > 0 && (
-            <div className="bg-white rounded-2xl border border-zinc-200 divide-y divide-zinc-100 overflow-hidden">
+            <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-zinc-200 dark:border-white/[0.07] divide-y divide-zinc-100 dark:divide-white/[0.06] overflow-hidden">
               {rest.map((c, i) => {
                 const remaining = parseFloat(c.totalBudget) - parseFloat(c.reservedBudget)
                 return (
                   <RevealUp key={c.id} delay={i * 0.04}>
                     <Link
                       href={`/campaigns/${c.slug}`}
-                      className="group flex items-center gap-4 sm:gap-6 px-6 py-5 hover:bg-zinc-50 transition-colors"
+                      className="group flex items-center gap-4 sm:gap-6 px-6 py-5 hover:bg-zinc-50 dark:hover:bg-white/[0.03] transition-colors"
                     >
                       <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0">
                         <Image
@@ -310,32 +306,32 @@ export default async function HomePage() {
                         <div className="flex items-center gap-2 mb-0.5">
                           <p className="text-[13px] font-semibold text-zinc-400 truncate">{c.organization.name}</p>
                         </div>
-                        <p className="text-[15px] font-black text-zinc-900 group-hover:text-green-700 transition-colors truncate">
+                        <p className="text-[15px] font-black text-zinc-900 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors truncate">
                           {c.name}
                         </p>
                       </div>
                       <div className="hidden sm:flex items-center gap-1.5 shrink-0">
                         {c.platforms.slice(0, 2).map(({ platform }) => (
-                          <span key={platform} className="text-[11px] font-semibold bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded">
+                          <span key={platform} className="text-[11px] font-semibold bg-zinc-100 dark:bg-white/[0.07] text-zinc-500 dark:text-zinc-400 px-2 py-0.5 rounded">
                             {PLATFORM_LABEL[platform]}
                           </span>
                         ))}
                       </div>
                       <div className="hidden lg:block shrink-0 text-end">
                         <p className="text-[11px] font-semibold text-zinc-400">{t('campaigns.budgetLeft')}</p>
-                        <p className="text-[13px] font-bold text-zinc-700">
+                        <p className="text-[13px] font-bold text-zinc-700 dark:text-zinc-300">
                           SAR {remaining.toLocaleString('en-SA', { maximumFractionDigits: 0 })}
                         </p>
                       </div>
                       {c.cpm && (
                         <div className="shrink-0 text-end">
-                          <p className="text-[20px] font-black text-green-600 leading-none">
+                          <p className="text-[20px] font-black text-green-600 dark:text-green-400 leading-none">
                             SAR {c.cpm}
                           </p>
                           <p className="text-[10px] font-semibold text-zinc-400 mt-0.5">CPM</p>
                         </div>
                       )}
-                      <ArrowRight size={16} weight="bold" className="shrink-0 text-zinc-300 group-hover:text-green-600 transition-colors rtl:rotate-180" />
+                      <ArrowRight size={16} weight="bold" className="shrink-0 text-zinc-300 dark:text-zinc-600 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors rtl:rotate-180" />
                     </Link>
                   </RevealUp>
                 )
@@ -346,45 +342,43 @@ export default async function HomePage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          HOW IT WORKS — numbered steps left / single image right
-          Layout family: stacked numbered list + anchoring image (2-col)
-          Different from 3-col with background numerals
+          HOW IT WORKS
       ───────────────────────────────────────────────────────────── */}
-      <section id="how-it-works" className="py-24 bg-white border-b border-zinc-100">
+      <section id="how-it-works" className="py-24 bg-white dark:bg-page border-b border-zinc-100 dark:border-white/[0.06]">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_480px] gap-16 items-center">
 
             {/* Steps */}
             <div>
               <RevealUp className="mb-12">
-                <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight whitespace-pre-line">
+                <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight text-zinc-900 dark:text-white whitespace-pre-line">
                   {t('howItWorks.title')}
                 </h2>
               </RevealUp>
 
-              <div className="space-y-0 divide-y divide-zinc-100">
+              <div className="space-y-0 divide-y divide-zinc-100 dark:divide-white/[0.06]">
                 {([0, 1, 2] as const).map((i, idx) => {
                   const icons = [
-                    <UsersThree key="users" size={20} weight="fill" className="text-green-600" />,
-                    <Play key="play" size={20} weight="fill" className="text-green-600" />,
-                    <CurrencyDollar key="dollar" size={20} weight="fill" className="text-green-600" />,
+                    <UsersThree key="users" size={20} weight="fill" className="text-green-600 dark:text-green-400" />,
+                    <Play key="play" size={20} weight="fill" className="text-green-600 dark:text-green-400" />,
+                    <CurrencyDollar key="dollar" size={20} weight="fill" className="text-green-600 dark:text-green-400" />,
                   ]
                   return (
                     <RevealUp key={i} delay={idx * 0.08}>
                       <div className="flex gap-6 py-8">
                         <div className="shrink-0 mt-0.5">
-                          <p className="text-[11px] font-black text-zinc-300 tracking-widest mb-3">
+                          <p className="text-[11px] font-black text-zinc-300 dark:text-zinc-600 tracking-widest mb-3">
                             {t(`howItWorks.steps.${i}.num`)}
                           </p>
-                          <div className="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center">
+                          <div className="w-9 h-9 rounded-xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center">
                             {icons[idx]}
                           </div>
                         </div>
                         <div>
-                          <h3 className="text-[18px] font-black tracking-tight text-zinc-900 mb-2">
+                          <h3 className="text-[18px] font-black tracking-tight text-zinc-900 dark:text-white mb-2">
                             {t(`howItWorks.steps.${i}.title`)}
                           </h3>
-                          <p className="text-[15px] text-zinc-500 leading-relaxed max-w-[380px]">
+                          <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-[380px]">
                             {t(`howItWorks.steps.${i}.body`)}
                           </p>
                         </div>
@@ -395,7 +389,7 @@ export default async function HomePage() {
               </div>
 
               <RevealUp delay={0.3}>
-                <div className="mt-10 pt-10 border-t border-zinc-100">
+                <div className="mt-10 pt-10 border-t border-zinc-100 dark:border-white/[0.06]">
                   <Link
                     href="/register"
                     className="inline-flex items-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white font-black px-7 py-3.5 text-[15px] transition-all"
@@ -416,15 +410,15 @@ export default async function HomePage() {
                   className="object-cover"
                 />
                 {/* Earnings badge overlay */}
-                <div className="absolute bottom-6 start-6 end-6 bg-white/95 backdrop-blur-sm rounded-xl px-5 py-4 border border-zinc-200/80">
+                <div className="absolute bottom-6 start-6 end-6 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm rounded-xl px-5 py-4 border border-zinc-200/80 dark:border-white/[0.08]">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-1">
                         {t('howItWorks.latestPayout')}
                       </p>
-                      <p className="text-[26px] font-black text-zinc-900 tracking-tight">SAR 3,840</p>
+                      <p className="text-[26px] font-black text-zinc-900 dark:text-white tracking-tight">SAR 3,840</p>
                     </div>
-                    <div className="flex items-center gap-1.5 text-green-600">
+                    <div className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
                       <TrendUp size={16} weight="bold" />
                       <span className="text-[13px] font-black">+41%</span>
                     </div>
@@ -437,9 +431,7 @@ export default async function HomePage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          FOR BRANDS — dark bento grid
-          Layout family: dark inversion with unequal bento cells
-          Only dark section on the page
+          FOR BRANDS — always dark
       ───────────────────────────────────────────────────────────── */}
       <section id="for-brands" className="py-24 bg-zinc-950">
         <div className="max-w-[1400px] mx-auto px-6">
@@ -453,10 +445,8 @@ export default async function HomePage() {
             </h2>
           </RevealUp>
 
-          {/* Bento grid — 3 cols, 2 rows, mixed cell sizes */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
 
-            {/* Large hero cell — spans 2 rows on lg */}
             <RevealUp className="sm:row-span-2 bg-zinc-900 rounded-2xl p-8 flex flex-col justify-between min-h-[280px] sm:min-h-0 border border-white/[0.05]">
               <div>
                 <p className="text-[48px] sm:text-[56px] font-black text-white tracking-tight leading-none mb-3">
@@ -476,7 +466,6 @@ export default async function HomePage() {
               </div>
             </RevealUp>
 
-            {/* Cell: fraud protection */}
             <RevealStagger delay={0.05} className="bg-zinc-900 rounded-2xl p-7 border border-white/[0.05] flex flex-col gap-4">
               <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
                 <Shield size={20} weight="fill" className="text-green-500" />
@@ -489,7 +478,6 @@ export default async function HomePage() {
               </div>
             </RevealStagger>
 
-            {/* Cell: verified views */}
             <RevealStagger delay={0.09} className="bg-zinc-900 rounded-2xl p-7 border border-white/[0.05] flex flex-col gap-4">
               <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
                 <ChartLineUp size={20} weight="fill" className="text-green-500" />
@@ -502,7 +490,6 @@ export default async function HomePage() {
               </div>
             </RevealStagger>
 
-            {/* Cell: network stat — spans 2 cols on sm */}
             <RevealStagger delay={0.13} className="sm:col-span-2 lg:col-span-1 relative bg-zinc-900 rounded-2xl border border-white/[0.05] overflow-hidden min-h-[180px]">
               <Image
                 src="https://d8j0ntlcm91z4.cloudfront.net/user_3GSqHKoPVu8jjSvOXL6Aq0ehOQc/hf_20260809_113747_c2dbb2cb-6111-4373-b2f0-cbc3cb060c6f.png"
@@ -524,15 +511,13 @@ export default async function HomePage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          TESTIMONIALS — large pull-quote + compact creator grid
-          Layout family: single dominant quote + supporting name list
-          Different from asymmetric masonry
+          TESTIMONIALS
       ───────────────────────────────────────────────────────────── */}
-      <section className="py-24 bg-zinc-50 border-b border-zinc-100">
+      <section className="py-24 bg-zinc-50 dark:bg-surface border-b border-zinc-100 dark:border-white/[0.06]">
         <div className="max-w-[1400px] mx-auto px-6">
 
           <RevealUp className="mb-10">
-            <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight">
+            <h2 className="text-[36px] sm:text-[44px] font-black tracking-[-0.025em] leading-tight text-zinc-900 dark:text-white">
               {t('testimonials.title')}
             </h2>
           </RevealUp>
@@ -558,15 +543,15 @@ export default async function HomePage() {
             </div>
           </RevealUp>
 
-          {/* Compact creator grid — 4 col, no images, just name + earnings */}
+          {/* Compact creator grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {([0, 1, 2, 3] as const).map((i, idx) => (
               <RevealStagger key={i} delay={idx * 0.06}>
-                <div className="bg-white border border-zinc-200 rounded-xl p-5 flex flex-col justify-between h-full gap-4">
-                  <p className="text-[13px] text-zinc-500 leading-relaxed">"{t(`testimonials.cards.${i}.quote`)}"</p>
+                <div className="bg-white dark:bg-[#1a1a1a] border border-zinc-200 dark:border-white/[0.07] rounded-xl p-5 flex flex-col justify-between h-full gap-4">
+                  <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-relaxed">"{t(`testimonials.cards.${i}.quote`)}"</p>
                   <div>
-                    <p className="text-[20px] font-black text-green-600">{t(`testimonials.cards.${i}.amount`)}</p>
-                    <p className="text-[13px] font-semibold text-zinc-900 mt-1">{t(`testimonials.cards.${i}.name`)}</p>
+                    <p className="text-[20px] font-black text-green-600 dark:text-green-400">{t(`testimonials.cards.${i}.amount`)}</p>
+                    <p className="text-[13px] font-semibold text-zinc-900 dark:text-white mt-1">{t(`testimonials.cards.${i}.name`)}</p>
                     <p className="text-[11px] text-zinc-400">{t(`testimonials.cards.${i}.handle`)}</p>
                   </div>
                 </div>
@@ -577,15 +562,13 @@ export default async function HomePage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          FAQ — 2-col split: header left, accordion right
-          Layout family: header-left / content-right split
-          Different from current centered max-width accordion
+          FAQ
       ───────────────────────────────────────────────────────────── */}
-      <section id="faq" className="py-24 bg-white border-b border-zinc-100">
+      <section id="faq" className="py-24 bg-white dark:bg-page border-b border-zinc-100 dark:border-white/[0.06]">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-16">
             <RevealUp>
-              <h2 className="text-[36px] sm:text-[40px] font-black tracking-[-0.025em] leading-tight sticky top-28">
+              <h2 className="text-[36px] sm:text-[40px] font-black tracking-[-0.025em] leading-tight text-zinc-900 dark:text-white sticky top-28">
                 {t('faq.title')}
               </h2>
             </RevealUp>
@@ -597,9 +580,7 @@ export default async function HomePage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          CTA — stark full-width, zinc-950 dark
-          Layout family: monochromatic dark manifesto, left-aligned
-          Different from the current centered green section
+          CTA — always dark
       ───────────────────────────────────────────────────────────── */}
       <section className="py-28 bg-zinc-950">
         <div className="max-w-[1400px] mx-auto px-6">
@@ -636,16 +617,16 @@ export default async function HomePage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          FOOTER
+          FOOTER — always dark
       ───────────────────────────────────────────────────────────── */}
       <footer className="bg-zinc-950 border-t border-white/[0.05] py-14">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-10 pb-10 border-b border-white/[0.06]">
             <div>
-              <p className="font-black text-[18px] text-white tracking-tight">
-                Content<span className="text-green-500">Rewards</span>
-              </p>
-              <p className="text-[13px] text-zinc-600 mt-1.5">{t('footer.tagline')}</p>
+              <div className="mb-2">
+                <Logo height={30} />
+              </div>
+              <p className="text-[13px] text-zinc-600">{t('footer.tagline')}</p>
             </div>
             <nav className="flex flex-wrap gap-x-8 gap-y-2 text-[14px] text-zinc-500">
               {[
@@ -655,6 +636,8 @@ export default async function HomePage() {
                 { label: t('nav.faq'),         href: '/#faq' },
                 { label: t('nav.login'),       href: '/login' },
                 { label: t('nav.startEarning'),href: '/register' },
+                { label: 'Terms',              href: '/terms' },
+                { label: 'Privacy',            href: '/privacy' },
               ].map(({ label, href }) => (
                 <Link key={href} href={href} className="hover:text-white transition-colors">{label}</Link>
               ))}

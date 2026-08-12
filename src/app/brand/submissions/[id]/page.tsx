@@ -1,5 +1,4 @@
 import { notFound, redirect } from 'next/navigation'
-import Link from 'next/link'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import BrandNav from '@/components/brand/BrandNav'
@@ -114,13 +113,8 @@ export default async function BrandSubmissionDetailPage({
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <BrandNav activeHref="/brand/submissions" orgName={orgName} userEmail={session.user.email} />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-4">
-        <Link href="/brand/submissions" className="text-sm text-muted-foreground hover:text-foreground">
-          ← Back to submissions
-        </Link>
-      </div>
+    <div className="min-h-screen bg-[#0d0d0d]">
+      <BrandNav orgName={orgName} userLabel={session.user.email} />
       <SubmissionDetailClient
         submission={serialized}
         creator={creator}

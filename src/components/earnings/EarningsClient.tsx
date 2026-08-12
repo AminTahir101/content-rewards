@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import { ArrowRight, ArrowUp, ArrowDown, TrendUp } from '@phosphor-icons/react'
+import { useTranslations } from 'next-intl'
+import AppNav from '@/components/app/AppNav'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -57,158 +57,204 @@ interface Props {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function sar(value: string | null, opts?: { sign?: boolean }): string {
+function sar(value: string | null, decimals = 2): string {
   if (!value) return 'SAR 0'
   const num = parseFloat(value)
-  const formatted = num.toLocaleString('en-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  if (opts?.sign && num > 0) return `+SAR ${formatted}`
-  return `SAR ${formatted}`
+  if (num >= 1_000_000) return `SAR ${(num / 1_000_000).toFixed(1)}M`
+  if (num >= 1_000)     return `SAR ${(num / 1_000).toFixed(0)}K`
+  return `SAR ${num.toLocaleString('en-SA', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`
 }
 
 function relativeDate(iso: string): string {
   const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000)
   if (diff === 0) return 'Today'
   if (diff === 1) return 'Yesterday'
-  if (diff < 7) return `${diff} days ago`
+  if (diff < 7)  return `${diff} days ago`
   return new Date(iso).toLocaleDateString('en-SA', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-const TX_TYPE_LABELS: Record<TxType, string> = {
-  CAMPAIGN_REWARD: 'Campaign Reward',
-  WITHDRAWAL:      'Withdrawal',
-  REFUND:          'Refund',
-  PLATFORM_FEE:    'Platform Fee',
-  ADJUSTMENT:      'Adjustment',
-  BONUS:           'Bonus',
-  REFERRAL:        'Referral',
+const SUBMISSION_STATUS_BADGE: Record<string, string> = {
+  APPROVED:           'bg-green-500/10 text-green-400',
+  TRACKING:           'bg-green-500/10 text-green-400',
+  PERFORMANCE_LOCKED: 'bg-blue-500/10 text-blue-400',
+  PAYOUT_PENDING:     'bg-amber-500/10 text-amber-400',
+  PAID:               'bg-green-500/20 text-green-300',
 }
 
-const SUBMISSION_STATUS_LABELS: Record<string, string> = {
-  APPROVED:           'Approved',
-  TRACKING:           'Tracking',
-  PERFORMANCE_LOCKED: 'Locked In',
-  PAYOUT_PENDING:     'Payout Pending',
-  PAID:               'Paid',
-}
-
-const SUBMISSION_STATUS_COLOR: Record<string, string> = {
-  APPROVED:           'bg-green-500/10 text-green-700',
-  TRACKING:           'bg-green-500/10 text-green-700',
-  PERFORMANCE_LOCKED: 'bg-blue-500/10 text-blue-700',
-  PAYOUT_PENDING:     'bg-amber-500/10 text-amber-700',
-  PAID:               'bg-green-600/10 text-green-800',
-}
-
-// ── Component ─────────────────────────────────────────────────────────────────
+// ── Tab type ──────────────────────────────────────────────────────────────────
 
 type ActiveTab = 'overview' | 'history' | 'bycampaign'
 
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function EarningsClient({ wallet, submissionEarnings, userName }: Props) {
-  const [tab, setTab] = useState<ActiveTab>('overview')
+  const t   = useTranslations('nav')
+  const te  = useTranslations('earnings')
+  const tcs = useTranslations('campaigns.status')
+  const tc  = useTranslations('common')
 
-  const hasWallet = wallet !== null
-  const hasTransactions = (wallet?.transactions.length ?? 0) > 0
-  const hasCampaignEarnings = submissionEarnings.length > 0
-
-  const tabs: { value: ActiveTab; label: string }[] = [
-    { value: 'overview', label: 'Overview' },
-    { value: 'history', label: 'History' },
-    { value: 'bycampaign', label: 'By Campaign' },
+  const CREATOR_NAV = [
+    { label: t('dashboard'),    href: '/dashboard' },
+    { label: t('discover'),     href: '/discover' },
+    { label: t('myCampaigns'),  href: '/my-campaigns' },
+    { label: t('earnings'),     href: '/earnings' },
+    { label: t('profile'),      href: '/profile' },
   ]
 
+  const TABS: { value: ActiveTab; label: string }[] = [
+    { value: 'overview',   label: te('overview')    },
+    { value: 'history',    label: te('history')     },
+    { value: 'bycampaign', label: te('byCampaign')  },
+  ]
+
+  const TX_TYPE_LABELS: Record<TxType, string> = {
+    CAMPAIGN_REWARD: te('txType.CAMPAIGN_REWARD'),
+    WITHDRAWAL:      te('txType.WITHDRAWAL'),
+    REFUND:          te('txType.REFUND'),
+    PLATFORM_FEE:    te('txType.PLATFORM_FEE'),
+    ADJUSTMENT:      te('txType.ADJUSTMENT'),
+    BONUS:           te('txType.BONUS'),
+    REFERRAL:        te('txType.REFERRAL'),
+  }
+
+  const SUBMISSION_STATUS_CFG: Record<string, { label: string; badge: string }> = {
+    APPROVED:           { label: tcs('APPROVED'),           badge: SUBMISSION_STATUS_BADGE.APPROVED           },
+    TRACKING:           { label: tcs('TRACKING'),           badge: SUBMISSION_STATUS_BADGE.TRACKING           },
+    PERFORMANCE_LOCKED: { label: tcs('PERFORMANCE_LOCKED'), badge: SUBMISSION_STATUS_BADGE.PERFORMANCE_LOCKED },
+    PAYOUT_PENDING:     { label: tcs('PAYOUT_PENDING'),     badge: SUBMISSION_STATUS_BADGE.PAYOUT_PENDING     },
+    PAID:               { label: tcs('PAID'),               badge: SUBMISSION_STATUS_BADGE.PAID               },
+  }
+
+  const [tab, setTab] = useState<ActiveTab>('overview')
+
+  const hasWallet          = wallet !== null
+  const hasTransactions    = (wallet?.transactions.length ?? 0) > 0
+  const hasCampaignEarnings = submissionEarnings.length > 0
+  const availableAmt       = parseFloat(wallet?.availableBalance ?? '0')
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Nav */}
-      <nav className="border-b bg-background/95 backdrop-blur sticky top-0 z-10">
-        <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
-          <span className="font-bold text-lg">Content Rewards</span>
-          <Badge variant="secondary">Creator</Badge>
+    <div className="min-h-screen bg-page">
+      <AppNav links={CREATOR_NAV} />
+
+      {/* ── Page header ────────────────────────────────────────────────────── */}
+      <div className="border-b border-black/[0.06] dark:border-white/[0.06]">
+        <div className="max-w-[1400px] mx-auto px-6 py-10">
+          <p className="text-[11px] font-black text-green-500 uppercase tracking-[0.18em] mb-3">
+            {te('label')}
+          </p>
+          <h1 className="text-[42px] sm:text-[56px] font-black text-zinc-900 dark:text-white tracking-[-0.03em] leading-[0.92]">
+            {userName ? te('titleNamed', { name: userName.split(' ')[0] }) : te('title')}
+          </h1>
         </div>
-      </nav>
+      </div>
 
-      <main className="max-w-lg mx-auto px-4 py-5 pb-28 space-y-5">
-        <h1 className="text-xl font-bold">
-          {userName ? `${userName.split(' ')[0]}'s Earnings` : 'My Earnings'}
-        </h1>
-
-        {/* ── Balance cards ───────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 gap-3">
-          <Card className="col-span-2 bg-primary text-primary-foreground">
-            <CardContent className="pt-5 pb-4 px-5">
-              <p className="text-sm opacity-80">Total Earned</p>
-              <p className="text-3xl font-bold mt-1">
-                {sar(wallet?.totalEarned ?? '0')}
-              </p>
-            </CardContent>
-          </Card>
-
-          {[
-            { label: 'Available', value: wallet?.availableBalance ?? '0', color: 'text-green-700' },
-            { label: 'Pending', value: wallet?.pendingBalance ?? '0', color: 'text-amber-700' },
-            { label: 'Paid Out', value: wallet?.lifetimePaid ?? '0', color: '' },
-            { label: 'Campaigns', value: String(submissionEarnings.length), color: '', isSar: false },
-          ].map(({ label, value, color, isSar = true }) => (
-            <Card key={label}>
-              <CardContent className="pt-4 pb-3 px-4">
-                <p className="text-xs text-muted-foreground">{label}</p>
-                <p className={`text-lg font-bold mt-0.5 ${color}`}>
-                  {isSar ? sar(value) : value}
+      {/* ── Stats strip ────────────────────────────────────────────────────── */}
+      <div className="border-b border-black/[0.06] dark:border-white/[0.06]">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-black/[0.06] dark:divide-white/[0.06]">
+            {[
+              {
+                label:  te('totalEarned'),
+                value:  sar(wallet?.totalEarned ?? '0', 0),
+                detail: te('allTime'),
+                Icon:   TrendUp,
+                accent: true,
+              },
+              {
+                label:  te('available'),
+                value:  sar(wallet?.availableBalance ?? '0', 0),
+                detail: te('readyToWithdraw'),
+                Icon:   ArrowUp,
+              },
+              {
+                label:  te('pending'),
+                value:  sar(wallet?.pendingBalance ?? '0', 0),
+                detail: te('beingVerified'),
+                Icon:   ArrowDown,
+              },
+              {
+                label:  te('paidOut'),
+                value:  sar(wallet?.lifetimePaid ?? '0', 0),
+                detail: te('lifetime'),
+                Icon:   ArrowUp,
+              },
+            ].map(({ label, value, detail, Icon, accent }) => (
+              <div key={label} className="px-8 py-7 first:ps-0 last:pe-0">
+                <div className="flex items-start justify-between mb-3">
+                  <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider">{label}</p>
+                  <Icon size={14} weight="fill" className="text-zinc-700 shrink-0" />
+                </div>
+                <p className={`text-[28px] lg:text-[34px] font-black tracking-tight leading-none mb-1 ${
+                  accent ? 'text-green-400' : 'text-zinc-900 dark:text-white'
+                }`}>
+                  {value}
                 </p>
-              </CardContent>
-            </Card>
-          ))}
+                <p className="text-[12px] text-zinc-600">{detail}</p>
+              </div>
+            ))}
+          </div>
         </div>
+      </div>
 
-        {/* Available balance CTA */}
-        {parseFloat(wallet?.availableBalance ?? '0') > 0 && (
-          <div className="flex items-center justify-between rounded-xl border border-green-200 bg-green-50 px-4 py-3">
+      {/* ── Main ───────────────────────────────────────────────────────────── */}
+      <div className="max-w-[1400px] mx-auto px-6 py-8">
+
+        {/* Available balance withdraw banner */}
+        {availableAmt > 0 && (
+          <div className="rounded-xl bg-green-500/[0.07] border border-green-500/20 px-5 py-4 flex items-center justify-between gap-4 mb-8">
             <div>
-              <p className="text-sm font-semibold text-green-900">
-                {sar(wallet!.availableBalance)} available
+              <p className="text-[13px] font-bold text-green-400">
+                {te('availableToWithdraw', { amount: sar(wallet!.availableBalance) })}
               </p>
-              <p className="text-xs text-green-700 mt-0.5">Ready to withdraw to your bank</p>
+              <p className="text-[12px] text-green-600 mt-0.5">
+                {te('withdrawComingSoon')}
+              </p>
             </div>
             <button
               disabled
-              className="rounded-lg bg-green-700 px-3 py-1.5 text-xs font-semibold text-white opacity-60 cursor-not-allowed"
-              title="Withdrawals coming soon"
+              className="shrink-0 rounded-lg bg-green-500/20 text-green-400 text-[12px] font-bold px-4 py-2 cursor-not-allowed opacity-60"
             >
-              Withdraw
+              {te('withdraw')}
             </button>
           </div>
         )}
 
-        {/* ── Tabs ────────────────────────────────────────────────────── */}
-        <div className="flex border-b">
-          {tabs.map((t) => (
-            <button
-              key={t.value}
-              onClick={() => setTab(t.value)}
-              className={`px-4 py-2.5 text-sm font-medium transition-colors ${
-                tab === t.value
-                  ? 'text-primary border-b-2 border-primary -mb-px'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+        {/* ── Tabs ─────────────────────────────────────────────────────────── */}
+        <div className="flex items-center gap-1 mb-6 border-b border-black/[0.06] dark:border-white/[0.06] pb-px">
+          {TABS.map((tb) => {
+            const active = tab === tb.value
+            return (
+              <button
+                key={tb.value}
+                onClick={() => setTab(tb.value)}
+                className={`relative px-4 py-2.5 text-[13px] font-bold transition-colors ${
+                  active ? 'text-zinc-900 dark:text-white' : 'text-zinc-600 hover:text-zinc-400'
+                }`}
+              >
+                {tb.label}
+                {active && (
+                  <span className="absolute bottom-[-1px] left-0 right-0 h-px bg-zinc-900 dark:bg-white" />
+                )}
+              </button>
+            )
+          })}
         </div>
 
-        {/* ── Overview tab ────────────────────────────────────────────── */}
+        {/* ── Overview ─────────────────────────────────────────────────────── */}
         {tab === 'overview' && (
-          <div className="space-y-4">
+          <div className="space-y-8">
             {!hasWallet ? (
-              <EmptyState
-                title="No earnings yet"
-                body="Join campaigns and submit content to start earning."
-                cta={{ label: 'Discover campaigns', href: '/discover' }}
+              <DarkEmptyState
+                title={te('noEarnings')}
+                body={te('noEarningsDetail')}
+                cta={{ label: te('discoverCampaigns'), href: '/discover' }}
               />
             ) : (
               <>
+                {/* Recent transactions */}
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-                    Recent Activity
+                  <p className="text-[11px] font-black text-zinc-700 uppercase tracking-[0.14em] mb-4">
+                    {te('recentActivity')}
                   </p>
                   {hasTransactions ? (
                     <div className="space-y-2">
@@ -218,56 +264,64 @@ export default function EarningsClient({ wallet, submissionEarnings, userName }:
                       {wallet!.transactions.length > 5 && (
                         <button
                           onClick={() => setTab('history')}
-                          className="w-full text-center text-sm text-primary hover:underline py-1"
+                          className="w-full text-center text-[12px] font-semibold text-zinc-600 hover:text-white transition-colors py-2"
                         >
-                          View all {wallet!.transactions.length} transactions →
+                          {te('viewAllTransactions', { count: wallet!.transactions.length })}
                         </button>
                       )}
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">No transactions yet.</p>
+                    <div className="rounded-xl bg-surface border border-black/[0.06] dark:border-white/[0.06] px-6 py-8 text-center">
+                      <p className="text-[13px] text-zinc-600">{te('noTransactions')}</p>
+                    </div>
                   )}
                 </div>
 
+                {/* Top campaigns */}
                 {hasCampaignEarnings && (
-                  <>
-                    <Separator />
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-                        Top Campaigns
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-[11px] font-black text-zinc-700 uppercase tracking-[0.14em]">
+                        {te('topCampaigns')}
                       </p>
-                      <div className="space-y-2">
-                        {submissionEarnings.slice(0, 3).map((s) => (
-                          <CampaignEarningRow key={s.id} item={s} />
-                        ))}
-                      </div>
+                      <button
+                        onClick={() => setTab('bycampaign')}
+                        className="text-[12px] font-semibold text-zinc-600 hover:text-white transition-colors flex items-center gap-1"
+                      >
+                        {tc('viewAll')} <ArrowRight size={11} weight="bold" />
+                      </button>
                     </div>
-                  </>
+                    <div className="space-y-2">
+                      {submissionEarnings.slice(0, 3).map((s) => (
+                        <CampaignEarningRow key={s.id} item={s} />
+                      ))}
+                    </div>
+                  </div>
                 )}
               </>
             )}
           </div>
         )}
 
-        {/* ── History tab ─────────────────────────────────────────────── */}
+        {/* ── History ──────────────────────────────────────────────────────── */}
         {tab === 'history' && (
           <div>
             {!hasTransactions ? (
-              <EmptyState
-                title="No transaction history"
-                body="Transactions appear here once your content earns rewards."
+              <DarkEmptyState
+                title={te('noTransactionHistory')}
+                body={te('noTransactionHistoryDetail')}
               />
             ) : (
               <div className="space-y-1">
                 {wallet!.transactions.map((tx, i) => {
                   const prev = wallet!.transactions[i - 1]
-                  const showDate =
+                  const showDateHeader =
                     i === 0 ||
                     new Date(tx.createdAt).toDateString() !== new Date(prev.createdAt).toDateString()
                   return (
                     <div key={tx.id}>
-                      {showDate && (
-                        <p className="text-xs text-muted-foreground pt-3 pb-1 font-medium">
+                      {showDateHeader && (
+                        <p className="text-[11px] font-bold text-zinc-700 uppercase tracking-[0.12em] pt-5 pb-2 first:pt-0">
                           {relativeDate(tx.createdAt)}
                         </p>
                       )}
@@ -280,17 +334,17 @@ export default function EarningsClient({ wallet, submissionEarnings, userName }:
           </div>
         )}
 
-        {/* ── By Campaign tab ─────────────────────────────────────────── */}
+        {/* ── By Campaign ──────────────────────────────────────────────────── */}
         {tab === 'bycampaign' && (
           <div>
             {!hasCampaignEarnings ? (
-              <EmptyState
-                title="No campaign earnings yet"
-                body="Approved submissions with verified views appear here."
-                cta={{ label: 'Discover campaigns', href: '/discover' }}
+              <DarkEmptyState
+                title={te('noCampaignEarnings')}
+                body={te('noCampaignEarningsDetail')}
+                cta={{ label: te('discoverCampaigns'), href: '/discover' }}
               />
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {submissionEarnings.map((s) => (
                   <CampaignEarningRow key={s.id} item={s} expanded />
                 ))}
@@ -298,115 +352,98 @@ export default function EarningsClient({ wallet, submissionEarnings, userName }:
             )}
           </div>
         )}
-      </main>
-
-      {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 inset-x-0 border-t bg-background">
-        <div className="max-w-lg mx-auto grid grid-cols-5 py-2">
-          {[
-            { label: 'Home', href: '/dashboard' },
-            { label: 'Discover', href: '/discover' },
-            { label: 'Campaigns', href: '/my-campaigns' },
-            { label: 'Earnings', href: '/earnings' },
-            { label: 'Profile', href: '/profile' },
-          ].map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex flex-col items-center gap-1 py-1 text-xs transition-colors ${
-                item.href === '/earnings'
-                  ? 'text-primary'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <span className="w-5 h-5 rounded bg-muted" aria-hidden="true" />
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </nav>
+      </div>
     </div>
   )
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── TxRow ─────────────────────────────────────────────────────────────────────
 
 function TxRow({ tx, showDate = true }: { tx: Transaction; showDate?: boolean }) {
-  const isCredit = tx.direction === 'CREDIT'
+  const te = useTranslations('earnings')
+  const isCredit  = tx.direction === 'CREDIT'
   const isPending = tx.status === 'PENDING'
+  const isFailed  = tx.status === 'FAILED' || tx.status === 'REVERSED'
 
   return (
-    <div className="flex items-center justify-between rounded-lg border bg-background px-3 py-3 gap-3">
+    <div className="flex items-center justify-between rounded-xl bg-surface border border-black/[0.06] dark:border-white/[0.06] px-4 py-3.5 gap-4">
       <div className="flex items-center gap-3 min-w-0">
-        <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0 ${
-            isCredit ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground'
-          }`}
-        >
-          {isCredit ? '↑' : '↓'}
+        {/* Icon pill */}
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+          isCredit ? 'bg-green-500/10' : 'bg-black/[0.05] dark:bg-white/[0.05]'
+        }`}>
+          {isCredit
+            ? <ArrowUp size={14} weight="bold" className="text-green-400" />
+            : <ArrowDown size={14} weight="bold" className="text-zinc-500" />
+          }
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-medium truncate">
-            {tx.description ?? TX_TYPE_LABELS[tx.type]}
+          <p className="text-[13px] font-semibold text-zinc-900 dark:text-white truncate">
+            {tx.description ?? te(`txType.${tx.type}`)}
           </p>
           {showDate && (
-            <p className="text-xs text-muted-foreground mt-0.5">{relativeDate(tx.createdAt)}</p>
+            <p className="text-[11px] text-zinc-600 mt-0.5">{relativeDate(tx.createdAt)}</p>
           )}
         </div>
       </div>
       <div className="text-end shrink-0">
-        <p
-          className={`text-sm font-semibold ${
-            isCredit ? 'text-green-700' : 'text-foreground'
-          }`}
-        >
-          {isCredit ? '+' : '-'}SAR {parseFloat(tx.amount).toLocaleString('en-SA', { minimumFractionDigits: 2 })}
+        <p className={`text-[13px] font-bold ${
+          isFailed ? 'text-red-400 line-through' : isCredit ? 'text-green-400' : 'text-zinc-400'
+        }`}>
+          {isCredit ? '+' : '−'}SAR {parseFloat(tx.amount).toLocaleString('en-SA', { minimumFractionDigits: 2 })}
         </p>
         {isPending && (
-          <span className="text-xs text-amber-600 font-medium">Pending</span>
+          <span className="text-[10px] font-bold text-amber-400">{te('pendingStatus')}</span>
+        )}
+        {isFailed && (
+          <span className="text-[10px] font-bold text-red-400">{te('failedStatus')}</span>
         )}
       </div>
     </div>
   )
 }
 
+// ── CampaignEarningRow ────────────────────────────────────────────────────────
+
 function CampaignEarningRow({ item, expanded = false }: { item: SubmissionEarning; expanded?: boolean }) {
-  const statusLabel = SUBMISSION_STATUS_LABELS[item.status] ?? item.status
-  const statusColor = SUBMISSION_STATUS_COLOR[item.status] ?? 'bg-muted text-muted-foreground'
+  const tcs = useTranslations('campaigns.status')
+  const badge = SUBMISSION_STATUS_BADGE[item.status] ?? 'bg-black/[0.06] dark:bg-white/[0.06] text-zinc-500'
+  const statusLabel = (() => { try { return tcs(item.status as any) } catch { return item.status } })()
 
   return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-xs text-muted-foreground">{item.campaign.organization.name}</p>
-            <Link
-              href={`/campaigns/${item.campaign.slug}`}
-              className="text-sm font-semibold hover:underline truncate block mt-0.5"
-            >
-              {item.campaign.name}
-            </Link>
-          </div>
-          <div className="text-end shrink-0">
-            <p className="text-base font-bold text-green-700">
-              +SAR {parseFloat(item.earnedAmount).toLocaleString('en-SA', { minimumFractionDigits: 2 })}
+    <div className="rounded-xl bg-surface border border-black/[0.06] dark:border-white/[0.06] px-4 py-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[11px] text-zinc-600 mb-0.5">{item.campaign.organization.name}</p>
+          <Link
+            href={`/campaigns/${item.campaign.slug}`}
+            className="text-[14px] font-black text-zinc-900 dark:text-white hover:text-green-400 transition-colors truncate block"
+          >
+            {item.campaign.name}
+          </Link>
+          {expanded && (
+            <p className="text-[11px] text-zinc-600 mt-1">
+              {item.campaign.cpm && <>SAR {item.campaign.cpm} CPM · </>}
+              {relativeDate(item.submittedAt)}
             </p>
-            <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium mt-1 ${statusColor}`}>
-              {statusLabel}
-            </span>
-          </div>
+          )}
         </div>
-        {expanded && item.campaign.cpm && (
-          <p className="text-xs text-muted-foreground mt-2">
-            SAR {item.campaign.cpm} CPM · {relativeDate(item.submittedAt)}
+        <div className="text-end shrink-0">
+          <p className="text-[15px] font-black text-green-400">
+            +SAR {parseFloat(item.earnedAmount).toLocaleString('en-SA', { minimumFractionDigits: 2 })}
           </p>
-        )}
-      </CardContent>
-    </Card>
+          <span className={`inline-block rounded-md px-2 py-0.5 text-[10px] font-black mt-1 ${badge}`}>
+            {statusLabel}
+          </span>
+        </div>
+      </div>
+    </div>
   )
 }
 
-function EmptyState({
+// ── DarkEmptyState ────────────────────────────────────────────────────────────
+
+function DarkEmptyState({
   title,
   body,
   cta,
@@ -416,12 +453,16 @@ function EmptyState({
   cta?: { label: string; href: string }
 }) {
   return (
-    <div className="py-12 text-center space-y-2">
-      <p className="font-semibold text-foreground">{title}</p>
-      <p className="text-sm text-muted-foreground">{body}</p>
+    <div className="rounded-xl bg-surface border border-black/[0.06] dark:border-white/[0.06] px-8 py-16 text-center">
+      <p className="text-[15px] font-black text-zinc-900 dark:text-white mb-1">{title}</p>
+      <p className="text-[13px] text-zinc-600 mb-6 max-w-[280px] mx-auto leading-relaxed">{body}</p>
       {cta && (
-        <Link href={cta.href} className="inline-block mt-3 text-sm text-primary hover:underline">
-          {cta.label} →
+        <Link
+          href={cta.href}
+          className="inline-flex items-center gap-2 rounded-xl bg-white hover:bg-zinc-100 active:scale-[0.97] text-black font-black px-5 py-2.5 text-[13px] transition-all"
+        >
+          {cta.label}
+          <ArrowRight size={13} weight="bold" />
         </Link>
       )}
     </div>

@@ -1,54 +1,69 @@
+'use client'
+
 import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
+import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { ThemeToggle } from '@/components/ThemeToggle'
+import Logo from '@/components/Logo'
 
 interface Props {
-  activeHref: string
   orgName?: string | null
-  userEmail?: string | null
+  userLabel?: string | null
 }
 
-const NAV_ITEMS = [
-  { label: 'Overview', href: '/dashboard' },
-  { label: 'Campaigns', href: '/brand/campaigns' },
-  { label: 'Submissions', href: '/brand/submissions' },
-  { label: 'Creators', href: '/brand/creators' },
-  { label: 'Analytics', href: '/brand/analytics' },
-]
+export default function BrandNav({ orgName, userLabel }: Props) {
+  const pathname = usePathname()
+  const t = useTranslations('nav')
 
-export default function BrandNav({ activeHref, orgName, userEmail }: Props) {
+  const BRAND_NAV = [
+    { label: t('overview'),    href: '/dashboard'          },
+    { label: t('campaigns'),   href: '/brand/campaigns'    },
+    { label: t('submissions'), href: '/brand/submissions'  },
+    { label: t('analytics'),   href: '/brand/analytics'    },
+    { label: t('finance'),     href: '/brand/finance'      },
+    { label: t('profile'),     href: '/profile'            },
+  ]
+
   return (
-    <nav className="border-b bg-background sticky top-0 z-10">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between h-14">
-          <div className="flex items-center gap-8">
-            <Link href="/dashboard" className="font-bold text-lg shrink-0">
-              Content Rewards
-            </Link>
-            <div className="hidden md:flex items-center gap-1">
-              {NAV_ITEMS.map((item) => {
-                const isActive = activeHref === item.href || activeHref.startsWith(item.href + '/')
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-muted text-foreground'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                )
-              })}
-            </div>
+    <nav className="sticky top-0 z-50 h-14 bg-page/90 backdrop-blur-md border-b border-black/[0.06] dark:border-white/[0.06] flex items-center">
+      <div className="max-w-[1400px] mx-auto w-full px-6 flex items-center justify-between gap-6">
+
+        {/* Logo + nav links */}
+        <div className="flex items-center gap-6 min-w-0">
+          <Link href="/dashboard" className="shrink-0">
+            <Logo height={30} />
+          </Link>
+          <div className="hidden md:flex items-center gap-1">
+            {BRAND_NAV.map((item) => {
+              const active = pathname === item.href || pathname.startsWith(item.href + '/')
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-colors ${
+                    active
+                      ? 'text-green-400 bg-green-500/10'
+                      : 'text-zinc-500 hover:text-white hover:bg-black/[0.06] dark:hover:bg-white/[0.06]'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              )
+            })}
           </div>
-          <div className="flex items-center gap-3">
-            {orgName && (
-              <span className="text-sm text-muted-foreground hidden sm:block">{orgName}</span>
-            )}
-            <Badge variant="secondary">Brand</Badge>
-          </div>
+        </div>
+
+        {/* Right side */}
+        <div className="flex items-center gap-3 shrink-0">
+          {(orgName ?? userLabel) && (
+            <span className="hidden sm:block text-[12px] text-zinc-600 truncate max-w-[200px]">
+              {orgName ?? userLabel}
+            </span>
+          )}
+          <ThemeToggle />
+          <span className="rounded-md bg-black/[0.07] dark:bg-white/[0.07] border border-black/[0.08] dark:border-white/[0.08] text-[11px] font-black text-zinc-400 px-2.5 py-1">
+            {t('roleBrand')}
+          </span>
         </div>
       </div>
     </nav>

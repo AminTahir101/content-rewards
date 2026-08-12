@@ -12,14 +12,14 @@ export default function FAQAccordion({ items }: { items: FAQItem[] }) {
   const [open, setOpen] = useState<number | null>(null)
 
   return (
-    <div className="divide-y divide-zinc-100">
+    <div className="divide-y divide-zinc-100 dark:divide-white/[0.06]">
       {items.map((faq, i) => (
         <div key={i}>
           <button
             onClick={() => setOpen(open === i ? null : i)}
             className="w-full flex items-center justify-between py-5 text-start gap-8"
           >
-            <span className="text-[15px] font-semibold text-zinc-900">{faq.q}</span>
+            <span className="text-[15px] font-semibold text-zinc-900 dark:text-white">{faq.q}</span>
             <span className="shrink-0 text-zinc-400">
               {open === i
                 ? <Minus size={18} weight="bold" />
@@ -28,7 +28,7 @@ export default function FAQAccordion({ items }: { items: FAQItem[] }) {
             </span>
           </button>
           {open === i && (
-            <p className="text-[15px] text-zinc-500 leading-relaxed pb-5 max-w-[65ch]">
+            <p className="text-[15px] text-zinc-500 dark:text-zinc-400 leading-relaxed pb-5 max-w-[65ch]">
               {faq.a}
             </p>
           )}

@@ -119,22 +119,53 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* ── App design tokens ───────────────────────────────────────────────────────── */
+
+:root {
+  --cr-page:    #ffffff;
+  --cr-surface: #f7f7f7;
+}
+
+.dark {
+  --cr-page:    #0d0d0d;
+  --cr-surface: #141414;
+}
+
+@theme inline {
+  --color-page:    var(--cr-page);
+  --color-surface: var(--cr-surface);
+}
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
 
-/* Arabic font override */
-html[lang="ar"] {
-  font-family: var(--font-arabic), system-ui, sans-serif;
+/* Arabic font — IBM Plex Sans Arabic */
+html[lang="ar"],
+html[lang="ar"] body {
+  font-family: var(--font-arabic), 'IBM Plex Sans Arabic', system-ui, sans-serif;
 }
 
-/* Arabic display type: relax tight tracking and line-height */
+/* Arabic type: no negative tracking, generous line-height */
 html[lang="ar"] h1,
 html[lang="ar"] h2,
-html[lang="ar"] h3 {
-  letter-spacing: 0;
-  line-height: 1.25;
+html[lang="ar"] h3,
+html[lang="ar"] h4 {
+  letter-spacing: 0 !important;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+/* Consistent RTL number formatting */
+html[lang="ar"] .tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Keep Latin numbers LTR inside RTL context */
+html[lang="ar"] [data-ltr] {
+  direction: ltr;
+  unicode-bidi: embed;
 }
 
 @layer base {

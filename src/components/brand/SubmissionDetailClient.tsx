@@ -2,8 +2,19 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import {
+  ArrowLeft,
+  ArrowSquareOut,
+  CheckCircle,
+  XCircle,
+  Flag,
+  Lock,
+  Warning,
+  User,
+  Clock,
+} from '@phosphor-icons/react'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -63,64 +74,88 @@ interface Props {
   canReview: boolean
 }
 
+// ── Config ────────────────────────────────────────────────────────────────────
+
+const STATUS_BADGE: Record<string, string> = {
+  PENDING_REVIEW:     'bg-amber-500/10 text-amber-400',
+  APPROVED:           'bg-green-500/10 text-green-400',
+  REJECTED:           'bg-red-500/10 text-red-400',
+  FLAGGED:            'bg-orange-500/10 text-orange-400',
+  TRACKING:           'bg-blue-500/10 text-blue-400',
+  PERFORMANCE_LOCKED: 'bg-blue-500/10 text-blue-400',
+  PAYOUT_PENDING:     'bg-amber-500/10 text-amber-400',
+  PAID:               'bg-green-500/20 text-green-300',
+  PAYMENT_HOLD:       'bg-red-500/10 text-red-400',
+  DISPUTED:           'bg-orange-500/10 text-orange-400',
+}
+
+const ACTION_ACTIVE_STYLE: Record<ReviewAction, { active: string; Icon: React.ElementType }> = {
+  APPROVED: { active: 'bg-green-500 text-black border-green-500',         Icon: CheckCircle },
+  REJECTED: { active: 'bg-red-500 text-white border-red-500',              Icon: XCircle    },
+  FLAGGED:  { active: 'bg-orange-500 text-white border-orange-500',        Icon: Flag       },
+  HOLD:     { active: 'bg-zinc-600 text-white border-zinc-600',            Icon: Lock       },
+}
+
+const REVIEW_STATES = ['PENDING_REVIEW', 'FLAGGED', 'PAYMENT_HOLD']
+
+const PLATFORM_SHORT: Record<string, string> = {
+  TIKTOK: 'TikTok', INSTAGRAM: 'Instagram', YOUTUBE: 'YouTube', X: 'X',
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const STATUS_COLOR: Record<string, string> = {
-  PENDING_REVIEW:     'bg-amber-100 text-amber-800',
-  APPROVED:           'bg-green-100 text-green-800',
-  REJECTED:           'bg-red-100 text-red-800',
-  FLAGGED:            'bg-orange-100 text-orange-800',
-  TRACKING:           'bg-blue-100 text-blue-800',
-  PERFORMANCE_LOCKED: 'bg-blue-200 text-blue-900',
-  PAYOUT_PENDING:     'bg-purple-100 text-purple-800',
-  PAID:               'bg-green-200 text-green-900',
-  PAYMENT_HOLD:       'bg-rose-100 text-rose-800',
-  DISPUTED:           'bg-gray-100 text-gray-800',
-}
-
-const STATUS_LABEL: Record<string, string> = {
-  PENDING_REVIEW:     'Pending Review',
-  APPROVED:           'Approved',
-  REJECTED:           'Rejected',
-  FLAGGED:            'Flagged',
-  TRACKING:           'Tracking',
-  PERFORMANCE_LOCKED: 'Locked In',
-  PAYOUT_PENDING:     'Payout Pending',
-  PAID:               'Paid',
-  PAYMENT_HOLD:       'On Hold',
-  DISPUTED:           'Disputed',
-}
-
-const ACTION_LABEL: Record<string, string> = {
-  APPROVED: 'Approved',
-  REJECTED: 'Rejected',
-  FLAGGED:  'Flagged',
-  HOLD:     'Put on Hold',
-}
-
-function fmt(iso: string) {
+function fmt(iso: string): string {
   return new Date(iso).toLocaleDateString('en-SA', {
     day: 'numeric', month: 'short', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   })
 }
 
-function platformLabel(p: string): string {
-  const map: Record<string, string> = { TIKTOK: 'TikTok', INSTAGRAM: 'Instagram', YOUTUBE: 'YouTube', X: 'X' }
-  return map[p] ?? p
+// ── Dark card wrapper ─────────────────────────────────────────────────────────
+
+function DarkCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl bg-surface border border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
+      <div className="px-5 py-4 border-b border-black/[0.05] dark:border-white/[0.05]">
+        <p className="text-[13px] font-black text-zinc-900 dark:text-white">{title}</p>
+      </div>
+      <div className="px-5 py-4">
+        {children}
+      </div>
+    </div>
+  )
 }
 
-// ── Review Panel ──────────────────────────────────────────────────────────────
+// ── Timeline row ──────────────────────────────────────────────────────────────
 
-const REVIEW_STATES = ['PENDING_REVIEW', 'FLAGGED', 'PAYMENT_HOLD']
+function TimelineRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="flex items-start justify-between gap-4 py-3 border-b border-black/[0.05] dark:border-white/[0.05] last:border-0">
+      <p className="text-[12px] text-zinc-600">{label}</p>
+      <p className={`text-[12px] font-semibold text-end ${accent ? 'text-green-400' : 'text-zinc-400'}`}>
+        {value}
+      </p>
+    </div>
+  )
+}
+
+// ── Review panel ──────────────────────────────────────────────────────────────
 
 function ReviewPanel({ submissionId }: { submissionId: string }) {
-  const [action, setAction] = useState<ReviewAction | ''>('')
-  const [reason, setReason] = useState('')
-  const [notes, setNotes] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const tb = useTranslations('brand')
+  const [action,  setAction]  = useState<ReviewAction | ''>('')
+  const [reason,  setReason]  = useState('')
+  const [notes,   setNotes]   = useState('')
+  const [error,   setError]   = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
+
+  const ACTION_CFG: Record<ReviewAction, { label: string; active: string; Icon: React.ElementType }> = {
+    APPROVED: { label: tb('approve'),     ...ACTION_ACTIVE_STYLE.APPROVED },
+    REJECTED: { label: tb('reject'),      ...ACTION_ACTIVE_STYLE.REJECTED },
+    FLAGGED:  { label: tb('flag'),        ...ACTION_ACTIVE_STYLE.FLAGGED  },
+    HOLD:     { label: tb('putOnHold'),   ...ACTION_ACTIVE_STYLE.HOLD     },
+  }
 
   async function submit() {
     if (!action) return
@@ -132,305 +167,307 @@ function ReviewPanel({ submissionId }: { submissionId: string }) {
         body: JSON.stringify({ action, reason: reason || undefined, notes: notes || undefined }),
       })
       const data = await res.json()
-      if (!res.ok) {
-        setError(data.error ?? 'Something went wrong')
-        return
-      }
+      if (!res.ok) { setError(data.error ?? 'Something went wrong'); return }
       router.refresh()
     })
   }
 
+  const needsReason = action === 'REJECTED' || action === 'FLAGGED'
+
   return (
-    <Card className="border-amber-200 bg-amber-50/30">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base">Review Submission</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Action selector */}
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {(['APPROVED', 'REJECTED', 'FLAGGED', 'HOLD'] as ReviewAction[]).map((a) => (
-            <button
-              key={a}
-              onClick={() => setAction(a)}
-              className={`rounded-lg border py-2 text-sm font-medium transition-colors ${
-                action === a
-                  ? a === 'APPROVED'
-                    ? 'bg-green-600 text-white border-green-600'
-                    : a === 'REJECTED'
-                    ? 'bg-red-600 text-white border-red-600'
-                    : a === 'FLAGGED'
-                    ? 'bg-orange-500 text-white border-orange-500'
-                    : 'bg-gray-600 text-white border-gray-600'
-                  : 'bg-background hover:bg-muted'
-              }`}
-            >
-              {ACTION_LABEL[a]}
-            </button>
-          ))}
+    <div className="rounded-xl bg-amber-500/[0.05] border border-amber-500/20 overflow-hidden">
+      <div className="px-5 py-4 border-b border-amber-500/10">
+        <p className="text-[13px] font-black text-amber-400">{tb('reviewSubmission')}</p>
+      </div>
+      <div className="px-5 py-4 space-y-4">
+
+        {/* Action buttons */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {(['APPROVED', 'REJECTED', 'FLAGGED', 'HOLD'] as ReviewAction[]).map((a) => {
+            const cfg    = ACTION_CFG[a]
+            const active = action === a
+            return (
+              <button
+                key={a}
+                onClick={() => setAction(a)}
+                className={`inline-flex items-center justify-center gap-1.5 rounded-lg border py-2.5 text-[12px] font-black transition-all ${
+                  active
+                    ? cfg.active
+                    : 'bg-black/[0.04] dark:bg-white/[0.04] border-black/[0.08] dark:border-white/[0.08] text-zinc-500 hover:border-black/20 dark:hover:border-white/20 hover:text-zinc-900 dark:hover:text-white'
+                }`}
+              >
+                <cfg.Icon size={13} weight="fill" />
+                {cfg.label}
+              </button>
+            )
+          })}
         </div>
 
-        {/* Reason (required for REJECT) */}
-        {(action === 'REJECTED' || action === 'FLAGGED') && (
+        {/* Reason */}
+        {needsReason && (
           <div>
-            <label className="text-xs font-semibold text-muted-foreground mb-1 block">
-              Reason {action === 'REJECTED' ? '(required)' : '(optional)'}
+            <label className="block text-[12px] font-bold text-zinc-400 mb-2">
+              {tb('reason')} {action === 'REJECTED' ? <span className="text-red-400">({tb('required')})</span> : `(${tb('optional')})`}
             </label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={2}
               maxLength={1000}
-              placeholder={action === 'REJECTED' ? 'Why is this being rejected?' : 'What was flagged?'}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder={action === 'REJECTED' ? tb('rejectPlaceholder') : tb('flagPlaceholder')}
+              className="w-full rounded-lg bg-black/[0.05] dark:bg-white/[0.05] border border-black/[0.08] dark:border-white/[0.08] text-[13px] text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 px-3 py-2.5 focus:outline-none focus:border-black/20 dark:focus:border-white/20 focus:bg-black/[0.07] dark:focus:bg-white/[0.07] transition resize-none"
             />
           </div>
         )}
 
-        {/* Internal notes (always available when action chosen) */}
+        {/* Internal notes */}
         {action && (
           <div>
-            <label className="text-xs font-semibold text-muted-foreground mb-1 block">
-              Internal notes (optional)
+            <label className="block text-[12px] font-bold text-zinc-400 mb-2">
+              {tb('internalNotes')} <span className="text-zinc-600 font-normal">({tb('teamOnly')})</span>
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
               maxLength={2000}
-              placeholder="Notes visible to your team only"
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder={tb('notesPlaceholder')}
+              className="w-full rounded-lg bg-black/[0.05] dark:bg-white/[0.05] border border-black/[0.08] dark:border-white/[0.08] text-[13px] text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 px-3 py-2.5 focus:outline-none focus:border-black/20 dark:focus:border-white/20 focus:bg-black/[0.07] dark:focus:bg-white/[0.07] transition resize-none"
             />
           </div>
         )}
 
         {error && (
-          <p className="text-sm text-red-600">{error}</p>
+          <div className="flex items-center gap-2 rounded-lg bg-red-500/[0.07] border border-red-500/20 px-3 py-2.5">
+            <Warning size={13} weight="fill" className="text-red-400 shrink-0" />
+            <p className="text-[12px] text-red-400">{error}</p>
+          </div>
         )}
 
         <button
           onClick={submit}
           disabled={!action || isPending || (action === 'REJECTED' && !reason.trim())}
-          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+          className="w-full rounded-lg bg-white hover:bg-zinc-100 active:scale-[0.98] text-black font-black text-[13px] py-3 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {isPending ? 'Submitting…' : action ? `Confirm: ${ACTION_LABEL[action]}` : 'Select an action above'}
+          {isPending
+            ? tb('submitting')
+            : action
+              ? tb('confirm', { action: ACTION_CFG[action].label })
+              : tb('selectAction')
+          }
         </button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+// ── Main component ────────────────────────────────────────────────────────────
 
 export default function SubmissionDetailClient({ submission: s, creator, canReview }: Props) {
-  const statusColor = STATUS_COLOR[s.status] ?? 'bg-muted text-muted-foreground'
-  const statusLabel = STATUS_LABEL[s.status] ?? s.status
+  const tb = useTranslations('brand')
+  const ts = useTranslations('submissions')
+  const tp = useTranslations('profile')
+  const tcs = useTranslations('campaigns.status')
+  const statusCfg = { label: tcs(s.status as any), badge: STATUS_BADGE[s.status] ?? 'bg-black/[0.06] dark:bg-white/[0.06] text-zinc-500' }
   const isReviewable = REVIEW_STATES.includes(s.status) && canReview
-
-  const displayName = creator?.profile?.displayName ?? creator?.name ?? creator?.email ?? 'Unknown creator'
-  const handle = creator?.creatorProfile?.handle
+  const displayName  = creator?.profile?.displayName ?? creator?.name ?? creator?.email ?? 'Unknown creator'
+  const handle       = creator?.creatorProfile?.handle
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-5">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs text-muted-foreground mb-1">{s.campaign.organization.name} · {s.campaign.name}</p>
-          <h1 className="text-2xl font-bold">Submission Detail</h1>
+    <div className="max-w-[1400px] mx-auto px-6 py-8">
+
+      {/* ── Back link ────────────────────────────────────────────────────────── */}
+      <Link
+        href="/brand/submissions"
+        className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-zinc-600 hover:text-zinc-900 dark:hover:text-white transition-colors mb-8"
+      >
+        <ArrowLeft size={12} weight="bold" />
+        {tb('backToSubmissions')}
+      </Link>
+
+      {/* ── Page header ──────────────────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-end gap-4 mb-8">
+        <div className="flex-1 min-w-0">
+          <p className="text-[11px] font-black text-green-500 uppercase tracking-[0.18em] mb-2">
+            {s.campaign.organization.name} · {s.campaign.name}
+          </p>
+          <h1 className="text-[36px] sm:text-[48px] font-black text-zinc-900 dark:text-white tracking-[-0.02em] leading-none">
+            {tb('submissionDetail')}
+          </h1>
         </div>
-        <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${statusColor}`}>
-          {statusLabel}
+        <span className={`shrink-0 rounded-lg text-[12px] font-black px-3 py-1.5 ${statusCfg.badge}`}>
+          {statusCfg.label}
         </span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Left column */}
-        <div className="lg:col-span-2 space-y-4">
+      {/* ── Grid ─────────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* Content */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Content</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-muted-foreground">Platform</p>
-                  <p className="font-medium">{platformLabel(s.platform)}</p>
-                </div>
-                <a
-                  href={s.contentUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-lg border px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
-                >
-                  View content ↗
-                </a>
-              </div>
+        {/* ── Left column ──────────────────────────────────────────────────── */}
+        <div className="lg:col-span-2 space-y-5">
+
+          {/* Content card */}
+          <DarkCard title={tb('content')}>
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-xs text-muted-foreground mb-1">URL</p>
-                <p className="text-sm break-all text-muted-foreground">{s.contentUrl}</p>
+                <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">{ts('platform')}</p>
+                <p className="text-[14px] font-black text-zinc-900 dark:text-white">
+                  {PLATFORM_SHORT[s.platform] ?? s.platform}
+                </p>
               </div>
-              {s.rejectionReason && (
-                <div className="rounded-lg bg-red-50 border border-red-200 px-3 py-2">
-                  <p className="text-xs font-semibold text-red-700 mb-0.5">Rejection reason</p>
-                  <p className="text-sm text-red-700">{s.rejectionReason}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+              <a
+                href={s.contentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-black/[0.1] dark:border-white/[0.1] text-zinc-700 dark:text-white/70 hover:border-black/20 dark:hover:border-white/20 hover:text-zinc-900 dark:hover:text-white text-[12px] font-bold px-3.5 py-2 transition-all"
+              >
+                {tb('viewContent')}
+                <ArrowSquareOut size={12} weight="bold" />
+              </a>
+            </div>
+            <div className="border-t border-black/[0.05] dark:border-white/[0.05] pt-4">
+              <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-2">{tb('url')}</p>
+              <p className="text-[12px] text-zinc-500 break-all font-mono leading-relaxed">{s.contentUrl}</p>
+            </div>
+            {s.rejectionReason && (
+              <div className="mt-4 rounded-lg bg-red-500/[0.07] border border-red-500/15 px-4 py-3">
+                <p className="text-[11px] font-black text-red-500 uppercase tracking-wider mb-1">{tb('rejectionReason')}</p>
+                <p className="text-[13px] text-red-400 leading-relaxed">{s.rejectionReason}</p>
+              </div>
+            )}
+          </DarkCard>
 
           {/* Campaign context */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Campaign</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                <div>
-                  <p className="text-xs text-muted-foreground">Reward model</p>
-                  <p className="font-medium">{s.campaign.rewardModel}</p>
-                </div>
-                {s.campaign.cpm && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">CPM</p>
-                    <p className="font-medium">SAR {s.campaign.cpm}</p>
-                  </div>
-                )}
-                <div>
-                  <p className="text-xs text-muted-foreground">Min payout</p>
-                  <p className="font-medium">SAR {s.campaign.minPayout}</p>
-                </div>
-                {s.campaign.maxCreatorPayout && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Max payout</p>
-                    <p className="font-medium">SAR {s.campaign.maxCreatorPayout}</p>
-                  </div>
-                )}
+          <DarkCard title={tb('campaignContext')}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4 mb-4">
+              <div>
+                <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">{tb('rewardModel')}</p>
+                <p className="text-[13px] font-black text-zinc-900 dark:text-white">{s.campaign.rewardModel}</p>
               </div>
-              {(s.campaign.requiredHashtags.length > 0 || s.campaign.requiredMentions.length > 0) && (
-                <>
-                  <Separator className="my-3" />
-                  <div className="flex flex-wrap gap-1.5">
-                    {s.campaign.requiredHashtags.map((h) => (
-                      <span key={h} className="rounded-full bg-muted px-2 py-0.5 text-xs">{h}</span>
-                    ))}
-                    {s.campaign.requiredMentions.map((m) => (
-                      <span key={m} className="rounded-full bg-blue-50 text-blue-700 px-2 py-0.5 text-xs">{m}</span>
-                    ))}
-                  </div>
-                </>
+              {s.campaign.cpm && (
+                <div>
+                  <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">CPM</p>
+                  <p className="text-[13px] font-black text-green-400">SAR {s.campaign.cpm}</p>
+                </div>
               )}
-            </CardContent>
-          </Card>
+              <div>
+                <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">{tb('minPayout')}</p>
+                <p className="text-[13px] font-black text-zinc-900 dark:text-white">SAR {s.campaign.minPayout}</p>
+              </div>
+              {s.campaign.maxCreatorPayout && (
+                <div>
+                  <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">{tb('maxPayout')}</p>
+                  <p className="text-[13px] font-black text-zinc-900 dark:text-white">SAR {s.campaign.maxCreatorPayout}</p>
+                </div>
+              )}
+            </div>
+            {(s.campaign.requiredHashtags.length > 0 || s.campaign.requiredMentions.length > 0) && (
+              <div className="border-t border-black/[0.05] dark:border-white/[0.05] pt-4 flex flex-wrap gap-2">
+                {s.campaign.requiredHashtags.map((h) => (
+                  <span key={h} className="rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-[11px] font-bold px-2.5 py-1">
+                    {h}
+                  </span>
+                ))}
+                {s.campaign.requiredMentions.map((m) => (
+                  <span key={m} className="rounded-lg bg-black/[0.05] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.06] text-zinc-400 text-[11px] font-bold px-2.5 py-1">
+                    {m}
+                  </span>
+                ))}
+              </div>
+            )}
+          </DarkCard>
 
           {/* Review history */}
           {s.reviews.length > 0 && (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Review History</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {s.reviews.map((r) => (
+            <DarkCard title={tb('reviewHistory')}>
+              <div className="space-y-4">
+                {s.reviews.map((r) => {
+                  const actionBadge =
+                    r.action === 'APPROVED' ? 'bg-green-500/10 text-green-400' :
+                    r.action === 'REJECTED' ? 'bg-red-500/10 text-red-400' :
+                    r.action === 'FLAGGED'  ? 'bg-orange-500/10 text-orange-400' :
+                    'bg-black/[0.06] dark:bg-white/[0.06] text-zinc-500'
+                  return (
                     <div key={r.id} className="flex items-start gap-3">
-                      <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-xs font-bold shrink-0">
-                        {r.action[0]}
+                      <div className="w-7 h-7 rounded-lg bg-black/[0.05] dark:bg-white/[0.05] flex items-center justify-center shrink-0">
+                        <Clock size={12} weight="fill" className="text-zinc-600" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold">{ACTION_LABEL[r.action] ?? r.action}</span>
-                          <span className="text-xs text-muted-foreground">{fmt(r.createdAt)}</span>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`rounded-md text-[10px] font-black px-2 py-0.5 ${actionBadge}`}>
+                            {r.action === 'APPROVED' ? tb('approved') : r.action === 'REJECTED' ? tb('rejected') : r.action === 'FLAGGED' ? tb('flagged') : r.action === 'HOLD' ? tb('held') : r.action}
+                          </span>
+                          <span className="text-[11px] text-zinc-600">{fmt(r.createdAt)}</span>
                         </div>
-                        {r.reason && <p className="text-sm text-muted-foreground mt-0.5">{r.reason}</p>}
+                        {r.reason && <p className="text-[12px] text-zinc-500 leading-relaxed">{r.reason}</p>}
                         {r.notes && (
-                          <p className="text-xs text-muted-foreground/70 mt-0.5 italic">Note: {r.notes}</p>
+                          <p className="text-[11px] text-zinc-700 mt-1 italic">{tb('note', { note: r.notes })}</p>
                         )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  )
+                })}
+              </div>
+            </DarkCard>
           )}
 
-          {/* Review action panel */}
+          {/* Review panel */}
           {isReviewable && <ReviewPanel submissionId={s.id} />}
         </div>
 
-        {/* Right column */}
-        <div className="space-y-4">
-          {/* Creator card */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Creator</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-bold shrink-0">
-                  {displayName[0]?.toUpperCase() ?? '?'}
-                </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm truncate">{displayName}</p>
-                  {handle && <p className="text-xs text-muted-foreground">@{handle}</p>}
-                </div>
-              </div>
-              {creator?.creatorProfile && (
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Followers</p>
-                    <p className="font-semibold text-sm">
-                      {creator.creatorProfile.totalFollowers.toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Score</p>
-                    <p className="font-semibold text-sm">{creator.creatorProfile.score}</p>
-                  </div>
-                  {creator.creatorProfile.isVerified && (
-                    <div className="col-span-2">
-                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
-                        Verified creator
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        {/* ── Right sidebar ────────────────────────────────────────────────── */}
+        <div className="space-y-5">
 
-          {/* Timeline */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Timeline</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Submitted</span>
-                <span className="font-medium">{fmt(s.submittedAt)}</span>
+          {/* Creator card */}
+          <DarkCard title={tb('creator')}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-black/[0.05] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center shrink-0">
+                <User size={18} weight="fill" className="text-zinc-600" />
               </div>
-              {s.reviewedAt && (
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Reviewed</span>
-                  <span className="font-medium">{fmt(s.reviewedAt)}</span>
+              <div className="min-w-0">
+                <p className="text-[14px] font-black text-zinc-900 dark:text-white truncate">{displayName}</p>
+                {handle && <p className="text-[12px] text-zinc-600">@{handle}</p>}
+              </div>
+            </div>
+            {creator?.creatorProfile && (
+              <div className="border-t border-black/[0.05] dark:border-white/[0.05] pt-4 grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">{tp('followers')}</p>
+                  <p className="text-[16px] font-black text-zinc-900 dark:text-white">
+                    {creator.creatorProfile.totalFollowers.toLocaleString('en-SA')}
+                  </p>
                 </div>
-              )}
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Last updated</span>
-                <span className="font-medium">{fmt(s.updatedAt)}</span>
-              </div>
-              {s.earnedAmount && (
-                <>
-                  <Separator className="my-1" />
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Earned</span>
-                    <span className="font-bold text-green-700">
-                      SAR {parseFloat(s.earnedAmount).toLocaleString('en-SA', { minimumFractionDigits: 2 })}
+                <div>
+                  <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">{tb('score')}</p>
+                  <p className="text-[16px] font-black text-zinc-900 dark:text-white">{creator.creatorProfile.score}</p>
+                </div>
+                {creator.creatorProfile.isVerified && (
+                  <div className="col-span-2">
+                    <span className="inline-flex items-center gap-1 rounded-md bg-green-500/10 border border-green-500/20 text-green-400 text-[11px] font-black px-2.5 py-1">
+                      <CheckCircle size={10} weight="fill" />
+                      {tb('verifiedCreator')}
                     </span>
                   </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                )}
+              </div>
+            )}
+          </DarkCard>
+
+          {/* Timeline card */}
+          <DarkCard title={tb('timeline')}>
+            <TimelineRow label={tb('submitted')}    value={fmt(s.submittedAt)} />
+            {s.reviewedAt && (
+              <TimelineRow label={tb('reviewed')}   value={fmt(s.reviewedAt)} />
+            )}
+            <TimelineRow label={tb('lastUpdated')} value={fmt(s.updatedAt)} />
+            {s.earnedAmount && (
+              <TimelineRow
+                label={tb('earned')}
+                value={`SAR ${parseFloat(s.earnedAmount).toLocaleString('en-SA', { minimumFractionDigits: 2 })}`}
+                accent
+              />
+            )}
+          </DarkCard>
         </div>
       </div>
     </div>

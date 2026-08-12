@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
-import { Source_Sans_3, Source_Code_Pro, Alyamama } from 'next/font/google'
+import { Source_Sans_3, Source_Code_Pro, IBM_Plex_Sans_Arabic } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { cookies } from 'next/headers'
 import './globals.css'
+import { ThemeProvider } from '@/components/ThemeProvider'
 
 const sourceSans = Source_Sans_3({
   variable: '--font-sans',
@@ -16,10 +17,10 @@ const sourceMono = Source_Code_Pro({
   weight: ['400', '600'],
 })
 
-const alyamama = Alyamama({
+const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   variable: '--font-arabic',
   subsets: ['arabic'],
-  weight: 'variable',
+  weight: ['300', '400', '600', '700'],
 })
 
 export const metadata: Metadata = {
@@ -38,12 +39,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html
       lang={validLocale}
       dir={dir}
-      className={`${sourceSans.variable} ${sourceMono.variable} ${alyamama.variable} h-full antialiased`}
+      className={`${sourceSans.variable} ${sourceMono.variable} ${ibmPlexArabic.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <NextIntlClientProvider locale={validLocale} messages={messages}>
-          {children}
-        </NextIntlClientProvider>
+        <ThemeProvider>
+          <NextIntlClientProvider locale={validLocale} messages={messages}>
+            {children}
+          </NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

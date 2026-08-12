@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import BrandNav from '@/components/brand/BrandNav'
@@ -7,6 +8,8 @@ import SubmissionQueueClient from '@/components/brand/SubmissionQueueClient'
 export const dynamic = 'force-dynamic'
 
 export default async function BrandSubmissionsPage() {
+  const tc = await getTranslations('common')
+  const tb = await getTranslations('brand')
   const session = await auth()
   if (!session?.user) redirect('/login?callbackUrl=/brand/submissions')
   if (session.user.role !== 'BRAND' && session.user.role !== 'AGENCY' && session.user.role !== 'ADMIN') {
@@ -22,11 +25,11 @@ export default async function BrandSubmissionsPage() {
 
   if (orgIds.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
-        <BrandNav activeHref="/brand/submissions" orgName={orgName} userEmail={session.user.email} />
-        <div className="max-w-7xl mx-auto px-6 py-16 text-center">
-          <p className="font-semibold text-lg">No organization found</p>
-          <p className="text-muted-foreground mt-1 text-sm">You need to be part of an organization to review submissions.</p>
+      <div className="min-h-screen bg-[#0d0d0d]">
+        <BrandNav orgName={orgName} userLabel={session.user.email} />
+        <div className="max-w-[1400px] mx-auto px-6 py-16 text-center">
+          <p className="text-[15px] font-black text-white mb-1">{tc('noOrgFound')}</p>
+          <p className="text-[13px] text-zinc-600">{tc('noOrgDetail', { action: tb('reviewSubmissions') })}</p>
         </div>
       </div>
     )
@@ -104,8 +107,8 @@ export default async function BrandSubmissionsPage() {
   }))
 
   return (
-    <div className="min-h-screen bg-background">
-      <BrandNav activeHref="/brand/submissions" orgName={orgName} userEmail={session.user.email} />
+    <div className="min-h-screen bg-[#0d0d0d]">
+      <BrandNav orgName={orgName} userLabel={session.user.email} />
       <SubmissionQueueClient
         initialSubmissions={serialized}
         initialTotal={total}

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { CheckCircle, ArrowRight } from '@phosphor-icons/react'
+import Logo from '@/components/Logo'
 
 type Role = 'CREATOR' | 'BRAND' | 'AGENCY'
 
@@ -48,17 +49,17 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-[100dvh] flex">
+    <div className="min-h-[100dvh] flex bg-white dark:bg-page">
 
-      {/* ── Left panel — branding ─────────────────────────────── */}
+      {/* Left panel — branding */}
       <div className="hidden lg:flex lg:w-[44%] bg-zinc-950 flex-col justify-between p-12 shrink-0">
-        <Link href="/" className="font-black text-[18px] text-white tracking-tight">
-          Content<span className="text-green-500">Rewards</span>
+        <Link href="/">
+          <Logo height={32} />
         </Link>
 
         <div>
           <p className="text-[11px] font-black text-green-500 uppercase tracking-[0.18em] mb-5">
-            Saudi Arabia's creator platform
+            Saudi Arabia&apos;s creator platform
           </p>
           <h2 className="text-[36px] font-black text-white tracking-[-0.025em] leading-tight mb-10">
             Turn your content<br />into income.
@@ -79,40 +80,40 @@ export default function RegisterPage() {
 
         <div className="border-t border-white/[0.08] pt-8">
           <p className="text-[14px] text-zinc-300 leading-snug mb-3">
-            "I earned more in one month than I used to make in three."
+            &ldquo;I earned more in one month than I used to make in three.&rdquo;
           </p>
           <p className="text-[12px] font-semibold text-zinc-500">Sarah A. — @saraha_ksa · SAR 18,400 earned</p>
         </div>
       </div>
 
-      {/* ── Right panel — form ────────────────────────────────── */}
-      <div className="flex-1 flex flex-col justify-center items-center bg-white px-6 py-16">
+      {/* Right panel — form */}
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-16">
         {/* Mobile logo */}
-        <Link href="/" className="lg:hidden font-black text-[18px] text-zinc-900 tracking-tight mb-10">
-          Content<span className="text-green-600">Rewards</span>
+        <Link href="/" className="lg:hidden mb-10">
+          <Logo height={30} />
         </Link>
 
         <div className="w-full max-w-[400px]">
-          <h1 className="text-[28px] font-black text-zinc-950 tracking-tight mb-1">
+          <h1 className="text-[28px] font-black text-zinc-950 dark:text-white tracking-tight mb-1">
             Create your account
           </h1>
           <p className="text-[15px] text-zinc-400 mb-8">
             Already have one?{' '}
-            <Link href="/login" className="text-green-600 font-semibold hover:text-green-700 transition-colors">
+            <Link href="/login" className="text-green-600 dark:text-green-400 font-semibold hover:text-green-700 transition-colors">
               Log in
             </Link>
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-[13px] text-red-600 font-medium">
+              <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-[13px] text-red-600 dark:text-red-400 font-medium">
                 {error}
               </div>
             )}
 
             {/* Role selector */}
             <div>
-              <p className="text-[13px] font-semibold text-zinc-700 mb-2">I am a...</p>
+              <p className="text-[13px] font-semibold text-zinc-700 dark:text-zinc-300 mb-2">I am a…</p>
               <div className="grid grid-cols-3 gap-2">
                 {ROLES.map((r) => (
                   <button
@@ -121,11 +122,11 @@ export default function RegisterPage() {
                     onClick={() => setRole(r.value)}
                     className={`rounded-xl border p-3 text-start transition-all ${
                       role === r.value
-                        ? 'border-green-600 bg-green-50 ring-1 ring-green-600'
-                        : 'border-zinc-200 hover:border-zinc-300 bg-white'
+                        ? 'border-green-500 bg-green-500/10 ring-1 ring-green-500'
+                        : 'border-zinc-200 dark:border-white/[0.1] hover:border-zinc-300 dark:hover:border-white/20 bg-white dark:bg-white/[0.04]'
                     }`}
                   >
-                    <span className={`block text-[13px] font-black ${role === r.value ? 'text-green-700' : 'text-zinc-900'}`}>
+                    <span className={`block text-[13px] font-black ${role === r.value ? 'text-green-600 dark:text-green-400' : 'text-zinc-900 dark:text-white'}`}>
                       {r.label}
                     </span>
                     <span className="block text-[11px] text-zinc-400 mt-0.5 leading-snug">
@@ -138,7 +139,7 @@ export default function RegisterPage() {
 
             {/* Name */}
             <div>
-              <label htmlFor="name" className="block text-[13px] font-semibold text-zinc-700 mb-1.5">
+              <label htmlFor="name" className="block text-[13px] font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
                 Full Name
               </label>
               <input
@@ -148,13 +149,13 @@ export default function RegisterPage() {
                 placeholder="Your name"
                 required
                 autoComplete="name"
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent transition"
+                className="w-full rounded-xl border border-zinc-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.05] px-4 py-3 text-[15px] text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
               />
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-[13px] font-semibold text-zinc-700 mb-1.5">
+              <label htmlFor="email" className="block text-[13px] font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
                 Email
               </label>
               <input
@@ -164,13 +165,13 @@ export default function RegisterPage() {
                 placeholder="you@example.com"
                 required
                 autoComplete="email"
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent transition"
+                className="w-full rounded-xl border border-zinc-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.05] px-4 py-3 text-[15px] text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
               />
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-[13px] font-semibold text-zinc-700 mb-1.5">
+              <label htmlFor="password" className="block text-[13px] font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
                 Password
               </label>
               <input
@@ -181,7 +182,7 @@ export default function RegisterPage() {
                 required
                 autoComplete="new-password"
                 minLength={8}
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent transition"
+                className="w-full rounded-xl border border-zinc-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.05] px-4 py-3 text-[15px] text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
               />
             </div>
 
@@ -190,16 +191,16 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none text-white font-black px-6 py-3.5 text-[15px] transition-all"
             >
-              {loading ? 'Creating account...' : (
-                <>Create Account <ArrowRight size={16} weight="bold" /></>
+              {loading ? 'Creating account…' : (
+                <>Create Account <ArrowRight size={16} weight="bold" className="rtl:rotate-180" /></>
               )}
             </button>
 
             <p className="text-center text-[12px] text-zinc-400">
               By creating an account you agree to our{' '}
-              <Link href="/terms" className="underline hover:text-zinc-600">Terms</Link>
+              <Link href="/terms" className="underline hover:text-zinc-600 dark:hover:text-zinc-300">Terms</Link>
               {' '}and{' '}
-              <Link href="/privacy" className="underline hover:text-zinc-600">Privacy Policy</Link>.
+              <Link href="/privacy" className="underline hover:text-zinc-600 dark:hover:text-zinc-300">Privacy Policy</Link>.
             </p>
           </form>
         </div>
