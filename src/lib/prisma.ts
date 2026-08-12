@@ -7,7 +7,7 @@ function createPrismaClient() {
   if (!connectionString) {
     throw new Error('No database connection string found (POSTGRES_PRISMA_URL or DATABASE_URL)')
   }
-  const adapter = new PrismaPg({ connectionString })
+  const adapter = new PrismaPg({ connectionString, ssl: { rejectUnauthorized: false } })
   return new PrismaClient({ adapter })
 }
 
